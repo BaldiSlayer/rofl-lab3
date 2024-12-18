@@ -18,11 +18,12 @@ type Rule struct {
 	rights      []ProductionBody
 }
 
-type Grammar struct {
+type Parser struct {
+	pos int
 }
 
-func New() *Grammar {
-	return &Grammar{}
+func New() *Parser {
+	return &Parser{}
 }
 
 func removeSpacesAndStrip(s string) string {
@@ -32,95 +33,69 @@ func removeSpacesAndStrip(s string) string {
 	return trimmed
 }
 
-func parseT(_ <-chan byte, prevSymbol byte) SymbolsBtw {
-	return SymbolsBtw{
-		s: string(prevSymbol),
-	}
-}
-
-func parseBetweenBrackets(in <-chan byte, _ byte) []SymbolsBtw {
+func (p *Parser) parseBetweenBrackets(s string) SymbolsBtw {
 	var sb strings.Builder
 
 	sb.WriteByte('[')
 
-	for c := range in {
-		sb.WriteByte(c)
+	for _, sym := range s {
+		sb.WriteByte(byte(sym))
 
-		if c == ']' {
-			return []SymbolsBtw{
-				{
-					s: sb.String(),
-				},
+		if sym == ']' {
+			p.pos += sb.Len() + 1
+
+			return SymbolsBtw{
+				s: sb.String(),
 			}
 		}
 	}
 
-	return nil
+	return SymbolsBtw{}
 }
 
-func parseCapitalDigit(in <-chan byte, prevSymbol byte) []SymbolsBtw {
-	res := <-in
+func isNumeric(symbol byte) bool {
+	return symbol >= '0' && symbol <= '9'
+}
 
-	if res >= '0' && res <= '9' {
-		return []SymbolsBtw{
-			{
-				s: string(prevSymbol) + string(res),
-			},
+func (p *Parser) parseCapitals(s string) SymbolsBtw {
+	if len(s) > 1 && isNumeric(s[1]) {
+		p.pos++
+
+		return SymbolsBtw{
+			s: string(s[0]) + string(s[p.pos+1]),
 		}
 	}
 
-	return []SymbolsBtw{
-		{
-			s: string(prevSymbol),
-		},
-		{
-			s: string(res),
-		},
+	return SymbolsBtw{
+		s: string(s[0]),
 	}
 }
 
-func parseNT(in <-chan byte, prevSymbol byte) []SymbolsBtw {
-	if prevSymbol == '[' {
-		return parseBetweenBrackets(in, prevSymbol)
-	}
+func (p *Parser) parseProductionBody(s string) ProductionBody {
+	body := make([]SymbolsBtw, 0, len(s))
 
-	return parseCapitalDigit(in, prevSymbol)
-}
+	p.pos = 0
 
-func parse(in <-chan byte, out chan<- SymbolsBtw) {
-	for c := range in {
-		if c >= 'a' && c <= 'z' {
-			out <- parseT(in, c)
+	for ; p.pos < len(s); p.pos++ {
+		i := p.pos
+
+		if s[i] == '[' {
+			body = append(body, p.parseBetweenBrackets(s[i:]))
 
 			continue
 		}
 
-		for _, nt := range parseNT(in, c) {
-			out <- nt
-		}
-	}
+		if s[i] >= 'A' && s[i] <= 'Z' {
+			body = append(body, p.parseCapitals(s[i:]))
 
-	close(out)
-}
-
-func parseProductionBody(s string) ProductionBody {
-	in := make(chan byte, 0)
-	out := make(chan SymbolsBtw, 0)
-
-	go parse(in, out)
-
-	go func() {
-		for _, hui := range s {
-			in <- byte(hui)
+			continue
 		}
 
-		close(in)
-	}()
+		// I will panic on wrong data, should I check it?
+		body = append(body, SymbolsBtw{
+			s: string(s[i]),
+		})
 
-	body := make([]SymbolsBtw, 0)
-
-	for c := range out {
-		body = append(body, c)
 	}
 
 	return ProductionBody{
@@ -128,32 +103,31 @@ func parseProductionBody(s string) ProductionBody {
 	}
 }
 
-func parseRight(s string) []ProductionBody {
+func (p *Parser) parseRight(s string) []ProductionBody {
 	pbs := make([]ProductionBody, 0)
 
 	for _, production := range strings.Split(s, "|") {
 		trimmed := strings.TrimFunc(production, unicode.IsSpace)
 
-		pbs = append(pbs, parseProductionBody(trimmed))
+		pbs = append(pbs, p.parseProductionBody(trimmed))
 	}
 
 	return pbs
 }
 
-func parseLine(s string) Rule {
+func (p *Parser) parseLine(s string) Rule {
 	s = removeSpacesAndStrip(s)
 
 	split := strings.Split(s, "->")
 
-	parseRight(split[1])
-
 	return Rule{
 		nonTerminal: split[0],
+		rights:      p.parseRight(split[1]),
 	}
 }
 
-func (g *Grammar) ParseLines(lines []string) {
+func (p *Parser) ParseLines(lines []string) {
 	for _, line := range lines {
-		parseLine(line)
+		p.parseLine(line)
 	}
 }
