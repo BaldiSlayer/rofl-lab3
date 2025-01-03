@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 	"github.com/BaldiSlayer/rofl-lab3/internal/models"
+	"github.com/BaldiSlayer/rofl-lab3/pkg/queue"
 )
 
 type CNF struct {
@@ -163,10 +164,80 @@ func deleteChainRules(g *grammar.Grammar) *grammar.Grammar {
 	return newGrammar
 }
 
+func mergeNTMaps(all map[string]struct{}, child map[models.SymbolsBtw]struct{}) map[string]struct{} {
+	for ch := range child {
+		all[ch.S] = struct{}{}
+	}
+
+	return all
+}
+
+// https://neerc.ifmo.ru/wiki/index.php?title=Удаление_eps-правил_из_грамматики
+func deleteNonGenerative(g *grammar.Grammar) *grammar.Grammar {
+	concernedRules := make(map[string][]int)
+	counter := make(map[int]int)
+	isGenerating := make(map[string]bool)
+	q := &queue.Queue[string]{}
+	allNTs := make(map[string]struct{})
+
+	i := 0
+
+	for _, rule := range g.Grammar {
+		count := getNonTerminalsOfRule(rule)
+		count[models.SymbolsBtw{S: rule.NonTerminal}] = struct{}{}
+
+		allNTs = mergeNTMaps(allNTs, count)
+
+		// проставляем concernedRules
+		for nt := range count {
+			if _, ok := concernedRules[nt.S]; !ok {
+				concernedRules[nt.S] = make([]int, 0)
+			}
+
+			concernedRules[nt.S] = append(concernedRules[nt.S], i)
+		}
+
+		counter[i] += len(count)
+
+		if len(count) == 0 {
+			isGenerating[rule.NonTerminal] = true
+			q.Enqueue(rule.NonTerminal)
+		}
+
+		i++
+	}
+
+	for nt := range allNTs {
+		if val := isGenerating[nt]; !val {
+			isGenerating[nt] = false
+		}
+	}
+
+	visited := make(map[string]struct{})
+	for _, elem := range q.DumpToSlice() {
+		visited[elem] = struct{}{}
+	}
+
+	for !q.IsEmpty() {
+		elem := q.Dequeue()
+
+		for _, rule := range concernedRules[elem] {
+			counter[rule] -= 1
+
+			if counter[rule] == 0 {
+				//isGenerating
+			}
+		}
+	}
+
+	return g
+}
+
 func (cnf *CNF) ToCNF(g *grammar.Grammar) *grammar.Grammar {
 	transformations := []func(*grammar.Grammar) *grammar.Grammar{
 		deleteLongRules,
 		deleteChainRules,
+		deleteNonGenerative,
 	}
 
 	// TODO it looks bad, I don't like it, but writing 7 function calls and declaring
