@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -13,15 +14,15 @@ func Test_parseBetweenBrackets(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want SymbolsBtw
+		want models.SymbolsBtw
 	}{
 		{
 			name: "first",
 			args: args{
 				input: "aba]",
 			},
-			want: SymbolsBtw{
-				s: "[aba]",
+			want: models.SymbolsBtw{
+				S: "[aba]",
 			},
 		},
 		{
@@ -29,8 +30,8 @@ func Test_parseBetweenBrackets(t *testing.T) {
 			args: args{
 				input: "fasdfasdfsda]",
 			},
-			want: SymbolsBtw{
-				s: "[fasdfasdfsda]",
+			want: models.SymbolsBtw{
+				S: "[fasdfasdfsda]",
 			},
 		},
 	}
@@ -53,7 +54,7 @@ func Test_parseRight(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []ProductionBody
+		want []models.ProductionBody
 	}{
 		{
 
@@ -61,9 +62,9 @@ func Test_parseRight(t *testing.T) {
 			args: args{
 				s: "SSa|SbSS|a",
 			},
-			want: []ProductionBody{
+			want: []models.ProductionBody{
 				{
-					body: []SymbolsBtw{
+					Body: []models.SymbolsBtw{
 						{
 							"S",
 						},
@@ -76,7 +77,7 @@ func Test_parseRight(t *testing.T) {
 					},
 				},
 				{
-					body: []SymbolsBtw{
+					Body: []models.SymbolsBtw{
 						{
 							"S",
 						},
@@ -92,7 +93,7 @@ func Test_parseRight(t *testing.T) {
 					},
 				},
 				{
-					body: []SymbolsBtw{
+					Body: []models.SymbolsBtw{
 						{
 							"a",
 						},
@@ -106,9 +107,9 @@ func Test_parseRight(t *testing.T) {
 			args: args{
 				s: "SSSSSSSS",
 			},
-			want: []ProductionBody{
+			want: []models.ProductionBody{
 				{
-					body: []SymbolsBtw{
+					Body: []models.SymbolsBtw{
 						{
 							"S",
 						},
@@ -158,18 +159,18 @@ func TestParser_parseLine(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want Rule
+		want models.Rule
 	}{
 		{
 			name: "first",
 			args: args{
 				s: "S  -> SSa  |SbSS| a",
 			},
-			want: Rule{
-				nonTerminal: "S",
-				rights: []ProductionBody{
+			want: models.Rule{
+				NonTerminal: "S",
+				Rights: []models.ProductionBody{
 					{
-						body: []SymbolsBtw{
+						Body: []models.SymbolsBtw{
 							{
 								"S",
 							},
@@ -182,7 +183,7 @@ func TestParser_parseLine(t *testing.T) {
 						},
 					},
 					{
-						body: []SymbolsBtw{
+						Body: []models.SymbolsBtw{
 							{
 								"S",
 							},
@@ -198,7 +199,7 @@ func TestParser_parseLine(t *testing.T) {
 						},
 					},
 					{
-						body: []SymbolsBtw{
+						Body: []models.SymbolsBtw{
 							{
 								"a",
 							},
@@ -212,11 +213,11 @@ func TestParser_parseLine(t *testing.T) {
 			args: args{
 				s: "S  ->    SSSSSSSS",
 			},
-			want: Rule{
-				nonTerminal: "S",
-				rights: []ProductionBody{
+			want: models.Rule{
+				NonTerminal: "S",
+				Rights: []models.ProductionBody{
 					{
-						body: []SymbolsBtw{
+						Body: []models.SymbolsBtw{
 							{
 								"S",
 							},
