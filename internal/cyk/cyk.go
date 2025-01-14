@@ -47,7 +47,7 @@ func isOneTermRule(rule models.ProductionBody, c uint8) bool {
 	return len(rule.Body) == 1 && string(c) == rule.Body[0].S
 }
 
-func dp(d map[string][][]bool, rightRules models.Rule, i, j int) bool {
+func calcDP(d map[string][][]bool, rightRules models.Rule, i, j int) bool {
 	for _, rightRule := range rightRules.Rights {
 		for k := i + 1; k < j; k++ {
 			if d[rightRule.Body[0].S][i][k] && d[rightRule.Body[1].S][k][j] {
@@ -60,20 +60,20 @@ func dp(d map[string][][]bool, rightRules models.Rule, i, j int) bool {
 }
 
 func (c *CYK) Check(word string) bool {
-	d := make(map[string][][]bool)
+	dp := make(map[string][][]bool)
 
 	for _, rule := range c.g.Grammar {
-		d[rule.NonTerminal] = make([][]bool, len(word)+1)
+		dp[rule.NonTerminal] = make([][]bool, len(word)+1)
 
-		for i := range d[rule.NonTerminal] {
-			d[rule.NonTerminal][i] = make([]bool, len(word)+1)
+		for i := range dp[rule.NonTerminal] {
+			dp[rule.NonTerminal][i] = make([]bool, len(word)+1)
 		}
 	}
 
 	for i := 0; i < len(word); i++ {
 		for _, rightRules := range c.terminalRules {
 			for _, rightRule := range rightRules.Rights {
-				d[rightRules.NonTerminal][i][i+1] = isOneTermRule(rightRule, word[i])
+				dp[rightRules.NonTerminal][i][i+1] = isOneTermRule(rightRule, word[i])
 			}
 		}
 	}
@@ -83,10 +83,10 @@ func (c *CYK) Check(word string) bool {
 			j := i + m
 
 			for _, rightRules := range c.nonTerminalRules {
-				d[rightRules.NonTerminal][i][j] = d[rightRules.NonTerminal][i][j] || dp(d, rightRules, i, j)
+				dp[rightRules.NonTerminal][i][j] = dp[rightRules.NonTerminal][i][j] || calcDP(dp, rightRules, i, j)
 			}
 		}
 	}
 
-	return d[c.startingTerm][0][len(word)]
+	return dp[c.startingTerm][0][len(word)]
 }
