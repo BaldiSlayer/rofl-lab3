@@ -233,11 +233,21 @@ func deleteNonGenerative(g *grammar.Grammar) *grammar.Grammar {
 	return g
 }
 
+func deleteNonReachable(g *grammar.Grammar) *grammar.Grammar {
+	return g
+}
+
+func deleteAloneTerminals(g *grammar.Grammar) *grammar.Grammar {
+	return g
+}
+
 func (cnf *CNF) ToCNF(g *grammar.Grammar) *grammar.Grammar {
-	transformations := []func(*grammar.Grammar) *grammar.Grammar{
+	transformations := [...]func(*grammar.Grammar) *grammar.Grammar{
 		deleteLongRules,
 		deleteChainRules,
 		deleteNonGenerative,
+		deleteNonReachable,
+		deleteAloneTerminals,
 	}
 
 	// TODO it looks bad, I don't like it, but writing 7 function calls and declaring
