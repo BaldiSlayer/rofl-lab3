@@ -323,6 +323,22 @@ func TestCYK_Check_PSP(t *testing.T) {
 			args: "()(())()",
 			want: true,
 		},
+		{
+			name: "9",
+			fields: fields{
+				g: &g,
+			},
+			args: "()())",
+			want: false,
+		},
+		{
+			name: "10",
+			fields: fields{
+				g: &g,
+			},
+			args: "()))",
+			want: false,
+		},
 	}
 
 	for _, tt := range tests {
