@@ -79,20 +79,8 @@ func (c *CYK) Check(word string) bool {
 	}
 
 	for m := 2; m < len(word)+1; m++ {
-		if m == len(word) {
-			u := 0
-			_ = u
-
-		}
-
 		for i := 0; i < len(word)-m+1; i++ {
 			j := i + m
-
-			if i == 0 && m == 2 {
-				u := 0
-				_ = u
-
-			}
 
 			for _, rightRules := range c.nonTerminalRules {
 				d[rightRules.NonTerminal][i][j] = d[rightRules.NonTerminal][i][j] || dp(d, rightRules, i, j)
