@@ -9,10 +9,11 @@ import (
 )
 
 func main() {
-	p := parser.New()
+	input := ""
 
 	fuzz := fuzzer.New(
-		p,
+		input,
+		parser.New(),
 		&cnf.CNF{},
 		&bigramms.Bigramms{},
 	)

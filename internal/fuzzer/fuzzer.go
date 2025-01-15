@@ -23,9 +23,7 @@ type Fuzzer struct {
 	g       *grammar.Grammar
 }
 
-func New(p Parser, cnf CNFer, b *bigramms.Bigramms) *Fuzzer {
-	s := ""
-
+func New(s string, p Parser, cnf CNFer, b *bigramms.Bigramms) *Fuzzer {
 	gram := p.Parse(s)
 
 	gCNF := cnf.ToCNF(gram)
