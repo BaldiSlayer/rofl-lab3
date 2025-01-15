@@ -1,8 +1,6 @@
 package models
 
-type ProductionBody struct {
-	Body []string
-}
+type ProductionBody []string
 
 type Rule struct {
 	NonTerminal string

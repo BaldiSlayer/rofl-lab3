@@ -61,24 +61,18 @@ func Test_parseRight(t *testing.T) {
 			},
 			want: []models.ProductionBody{
 				{
-					Body: []string{
-						"S",
-						"S",
-						"a",
-					},
+					"S",
+					"S",
+					"a",
 				},
 				{
-					Body: []string{
-						"S",
-						"b",
-						"S",
-						"S",
-					},
+					"S",
+					"b",
+					"S",
+					"S",
 				},
 				{
-					Body: []string{
-						"a",
-					},
+					"a",
 				},
 			},
 		},
@@ -90,16 +84,14 @@ func Test_parseRight(t *testing.T) {
 			},
 			want: []models.ProductionBody{
 				{
-					Body: []string{
-						"S",
-						"S",
-						"S",
-						"S",
-						"S",
-						"S",
-						"S",
-						"S",
-					},
+					"S",
+					"S",
+					"S",
+					"S",
+					"S",
+					"S",
+					"S",
+					"S",
 				},
 			},
 		},
@@ -135,24 +127,18 @@ func TestParser_parseLine(t *testing.T) {
 				NonTerminal: "S",
 				Rights: []models.ProductionBody{
 					{
-						Body: []string{
-							"S",
-							"S",
-							"a",
-						},
+						"S",
+						"S",
+						"a",
 					},
 					{
-						Body: []string{
-							"S",
-							"b",
-							"S",
-							"S",
-						},
+						"S",
+						"b",
+						"S",
+						"S",
 					},
 					{
-						Body: []string{
-							"a",
-						},
+						"a",
 					},
 				},
 			},
@@ -166,16 +152,14 @@ func TestParser_parseLine(t *testing.T) {
 				NonTerminal: "S",
 				Rights: []models.ProductionBody{
 					{
-						Body: []string{
-							"S",
-							"S",
-							"S",
-							"S",
-							"S",
-							"S",
-							"S",
-							"S",
-						},
+						"S",
+						"S",
+						"S",
+						"S",
+						"S",
+						"S",
+						"S",
+						"S",
 					},
 				},
 			},

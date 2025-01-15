@@ -56,10 +56,10 @@ func makeFirstAndLastRec(
 
 	for _, rightRule := range g.Grammar[nt].Rights {
 		// update first
-		step(first, rightRule.Body[0])
+		step(first, rightRule[0])
 
 		// update last
-		step(first, rightRule.Body[len(rightRule.Body)-1])
+		step(first, rightRule[len(rightRule)-1])
 	}
 }
 
@@ -85,8 +85,8 @@ func checkFollow(
 	changed := false
 
 	isChanged := func(rightRule models.ProductionBody) bool {
-		for terminal := range first[rightRule.Body[1]] {
-			if _, ok := follow[rightRule.Body[0]][terminal]; !ok {
+		for terminal := range first[rightRule[1]] {
+			if _, ok := follow[rightRule[0]][terminal]; !ok {
 				return true
 			}
 		}
@@ -96,12 +96,12 @@ func checkFollow(
 
 	for _, rightRules := range g.Grammar {
 		for _, rightRule := range rightRules.Rights {
-			if len(rightRule.Body) > 1 {
+			if len(rightRule) > 1 {
 				changed = isChanged(rightRule)
 
-				follow[rightRule.Body[0]] = union(
-					follow[rightRule.Body[0]],
-					first[rightRule.Body[1]],
+				follow[rightRule[0]] = union(
+					follow[rightRule[0]],
+					first[rightRule[1]],
 				)
 			}
 		}
@@ -132,8 +132,8 @@ func checkPrecede(
 	changed := false
 
 	isChanged := func(rightRule models.ProductionBody) bool {
-		for terminal := range last[rightRule.Body[0]] {
-			if _, ok := precede[rightRule.Body[1]][terminal]; !ok {
+		for terminal := range last[rightRule[0]] {
+			if _, ok := precede[rightRule[1]][terminal]; !ok {
 				return true
 			}
 		}
@@ -143,12 +143,12 @@ func checkPrecede(
 
 	for _, rightRules := range g.Grammar {
 		for _, rightRule := range rightRules.Rights {
-			if len(rightRule.Body) > 1 {
+			if len(rightRule) > 1 {
 				changed = isChanged(rightRule)
 
-				precede[rightRule.Body[1]] = union(
-					precede[rightRule.Body[1]],
-					last[rightRule.Body[0]],
+				precede[rightRule[1]] = union(
+					precede[rightRule[1]],
+					last[rightRule[0]],
 				)
 			}
 		}
@@ -212,8 +212,8 @@ func pairChecking(g *grammar.Grammar) func(y1, y2 string) bool {
 
 	for _, rules := range g.Grammar {
 		for _, rule := range rules.Rights {
-			if len(rule.Body) == 2 {
-				exists[fmt.Sprintf("%s %s", rule.Body[0], rule.Body[1])] = struct{}{}
+			if len(rule) == 2 {
+				exists[fmt.Sprintf("%s %s", rule[0], rule[1])] = struct{}{}
 			}
 		}
 	}

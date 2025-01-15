@@ -79,9 +79,7 @@ func (p *Parser) parseProductionBody(s string) models.ProductionBody {
 		body = append(body, string(s[i]))
 	}
 
-	return models.ProductionBody{
-		Body: body,
-	}
+	return body
 }
 
 func (p *Parser) parseRight(s string) []models.ProductionBody {

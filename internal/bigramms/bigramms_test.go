@@ -68,11 +68,8 @@ func TestBigramms_Build(t *testing.T) {
 				NonTerminal: "S",
 				Rights: []models.ProductionBody{
 					{
-						Body: []string{
-							"A",
-
-							"A",
-						},
+						"A",
+						"A",
 					},
 				},
 			},
@@ -80,9 +77,7 @@ func TestBigramms_Build(t *testing.T) {
 				NonTerminal: "A",
 				Rights: []models.ProductionBody{
 					{
-						Body: []string{
-							"a",
-						},
+						"a",
 					},
 				},
 			},

@@ -14,7 +14,7 @@ func isTerminal(symbols string) bool {
 func extractTerminalsFromRule(rule models.ProductionBody) []string {
 	terminals := make([]string, 0)
 
-	for _, smb := range rule.Body {
+	for _, smb := range rule {
 		if isTerminal(smb) {
 			terminals = append(terminals, smb)
 		}

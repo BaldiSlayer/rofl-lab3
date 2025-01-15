@@ -41,7 +41,7 @@ func deleteLongPart(rule models.Rule, idGetter func() int) []models.Rule {
 	rules := make([]models.Rule, 0)
 
 	for _, r := range rule.Rights {
-		if len(r.Body) <= 2 {
+		if len(r) <= 2 {
 			rules = append(rules, models.Rule{
 				NonTerminal: rule.NonTerminal,
 				Rights:      []models.ProductionBody{r},
@@ -56,21 +56,15 @@ func deleteLongPart(rule models.Rule, idGetter func() int) []models.Rule {
 			NonTerminal: rule.NonTerminal,
 			Rights: []models.ProductionBody{
 				{
-					Body: []string{
-						r.Body[0],
-						newNT,
-					},
+					r[0],
+					newNT,
 				},
 			},
 		}
 
 		newRule := models.Rule{
 			NonTerminal: newNT,
-			Rights: []models.ProductionBody{
-				{
-					Body: r.Body[1:],
-				},
-			},
+			Rights:      []models.ProductionBody{r[1:]},
 		}
 
 		rules = append(rules, shortRule)
@@ -95,7 +89,7 @@ func deleteLongRules(g *grammar.Grammar) *grammar.Grammar {
 func getNonTerminalsOfProductionBody(pBody models.ProductionBody) map[string]struct{} {
 	nts := make(map[string]struct{}, 0)
 
-	for _, symbol := range pBody.Body {
+	for _, symbol := range pBody {
 		if isNotTerminal(symbol) {
 			nts[symbol] = struct{}{}
 		}
@@ -140,8 +134,8 @@ func deleteChainRulesIteratively(nt string, g *grammar.Grammar, visited map[stri
 	for _, pBody := range g.Grammar[nt].Rights {
 		// если тело продукции - цепное правило, то все его правила
 		// прикрепляем к нетерминалу nt
-		if len(pBody.Body) == 1 && isNotTerminal(pBody.Body[0]) {
-			ntPBs := g.Grammar[pBody.Body[0]].Rights
+		if len(pBody) == 1 && isNotTerminal(pBody[0]) {
+			ntPBs := g.Grammar[pBody[0]].Rights
 			newRule.Rights = append(newRule.Rights, ntPBs...)
 
 			continue
@@ -164,7 +158,7 @@ func deleteChainRules(g *grammar.Grammar) *grammar.Grammar {
 }
 
 func pbContainsNT(body models.ProductionBody, nt string) bool {
-	for _, elem := range body.Body {
+	for _, elem := range body {
 		if elem == nt {
 			return true
 		}
@@ -284,7 +278,7 @@ func findNonReachable(start string, g *grammar.Grammar, visited map[string]struc
 	visited[start] = struct{}{}
 
 	for _, rightRule := range g.Grammar[start].Rights {
-		for _, smb := range rightRule.Body {
+		for _, smb := range rightRule {
 			if _, ok := visited[smb]; !ok {
 				visited = findNonReachable(smb, g, visited)
 			}
@@ -314,29 +308,49 @@ func replacePairedTerminals(
 ) (models.ProductionBody, []models.Rule) {
 	rules := make([]models.Rule, 0)
 
-	if len(pb.Body) == 2 && isTerminal(pb.Body[0]) && isTerminal(pb.Body[1]) {
-		if pb.Body[0] == pb.Body[1] {
+	if len(pb) == 2 && isTerminal(pb[0]) && isTerminal(pb[1]) {
+		if pb[0] == pb[1] {
 			name := genNT()
 
 			rules = append(rules, models.Rule{
 				NonTerminal: name,
 				Rights: []models.ProductionBody{
 					{
-						Body: []string{
-							pb.Body[0],
-						},
+						pb[0],
 					},
 				},
 			})
 
 			return models.ProductionBody{
-				Body: []string{
-					name, name,
-				},
+				name, name,
 			}, rules
 		}
 
-		// todo разные
+		name1 := genNT()
+		name2 := genNT()
+
+		rules = append(rules,
+			models.Rule{
+				NonTerminal: name1,
+				Rights: []models.ProductionBody{
+					{
+						pb[0],
+					},
+				},
+			},
+			models.Rule{
+				NonTerminal: name2,
+				Rights: []models.ProductionBody{
+					{
+						pb[1],
+					},
+				},
+			},
+		)
+
+		return models.ProductionBody{
+			name1, name2,
+		}, rules
 	}
 
 	return pb, rules
