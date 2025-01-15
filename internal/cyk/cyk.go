@@ -44,13 +44,13 @@ func New(g *grammar.Grammar) *CYK {
 }
 
 func isOneTermRule(rule models.ProductionBody, c uint8) bool {
-	return len(rule.Body) == 1 && string(c) == rule.Body[0].S
+	return len(rule.Body) == 1 && string(c) == rule.Body[0]
 }
 
 func calcDP(d map[string][][]bool, rightRules models.Rule, i, j int) bool {
 	for _, rightRule := range rightRules.Rights {
 		for k := i + 1; k < j; k++ {
-			if d[rightRule.Body[0].S][i][k] && d[rightRule.Body[1].S][k][j] {
+			if d[rightRule.Body[0]][i][k] && d[rightRule.Body[1]][k][j] {
 				return true
 			}
 		}

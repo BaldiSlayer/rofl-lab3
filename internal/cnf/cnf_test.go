@@ -25,16 +25,10 @@ func Test_deleteLongPart(t *testing.T) {
 					NonTerminal: "B",
 					Rights: []models.ProductionBody{
 						{
-							Body: []models.SymbolsBtw{
-								{
-									"S",
-								},
-								{
-									"S",
-								},
-								{
-									"a",
-								},
+							Body: []string{
+								"S",
+								"S",
+								"a",
 							},
 						},
 					},
@@ -46,13 +40,9 @@ func Test_deleteLongPart(t *testing.T) {
 					NonTerminal: "B",
 					Rights: []models.ProductionBody{
 						{
-							Body: []models.SymbolsBtw{
-								{
-									"S",
-								},
-								{
-									"[new_NT_0]",
-								},
+							Body: []string{
+								"S",
+								"[new_NT_0]",
 							},
 						},
 					},
@@ -61,13 +51,9 @@ func Test_deleteLongPart(t *testing.T) {
 					NonTerminal: "[new_NT_0]",
 					Rights: []models.ProductionBody{
 						{
-							Body: []models.SymbolsBtw{
-								{
-									"S",
-								},
-								{
-									"a",
-								},
+							Body: []string{
+								"S",
+								"a",
 							},
 						},
 					},
@@ -81,39 +67,24 @@ func Test_deleteLongPart(t *testing.T) {
 					NonTerminal: "B",
 					Rights: []models.ProductionBody{
 						{
-							Body: []models.SymbolsBtw{
-								{
-									"S",
-								},
-								{
-									"S",
-								},
-								{
-									"a",
-								},
+							Body: []string{
+
+								"S",
+								"S",
+								"a",
 							},
 						},
 						{
-							Body: []models.SymbolsBtw{
-								{
-									"S",
-								},
-								{
-									"b",
-								},
-								{
-									"S",
-								},
-								{
-									"S",
-								},
+							Body: []string{
+								"S",
+								"b",
+								"S",
+								"S",
 							},
 						},
 						{
-							Body: []models.SymbolsBtw{
-								{
-									"a",
-								},
+							Body: []string{
+								"a",
 							},
 						},
 					},
@@ -125,13 +96,9 @@ func Test_deleteLongPart(t *testing.T) {
 					NonTerminal: "B",
 					Rights: []models.ProductionBody{
 						{
-							Body: []models.SymbolsBtw{
-								{
-									"S",
-								},
-								{
-									"[new_NT_0]",
-								},
+							Body: []string{
+								"S",
+								"[new_NT_0]",
 							},
 						},
 					},
@@ -140,13 +107,9 @@ func Test_deleteLongPart(t *testing.T) {
 					NonTerminal: "[new_NT_0]",
 					Rights: []models.ProductionBody{
 						{
-							Body: []models.SymbolsBtw{
-								{
-									"S",
-								},
-								{
-									"a",
-								},
+							Body: []string{
+								"S",
+								"a",
 							},
 						},
 					},
@@ -155,13 +118,9 @@ func Test_deleteLongPart(t *testing.T) {
 					NonTerminal: "B",
 					Rights: []models.ProductionBody{
 						{
-							Body: []models.SymbolsBtw{
-								{
-									"S",
-								},
-								{
-									"[new_NT_1]",
-								},
+							Body: []string{
+								"S",
+								"[new_NT_1]",
 							},
 						},
 					},
@@ -170,13 +129,9 @@ func Test_deleteLongPart(t *testing.T) {
 					NonTerminal: "[new_NT_1]",
 					Rights: []models.ProductionBody{
 						{
-							Body: []models.SymbolsBtw{
-								{
-									"b",
-								},
-								{
-									"[new_NT_2]",
-								},
+							Body: []string{
+								"b",
+								"[new_NT_2]",
 							},
 						},
 					},
@@ -185,13 +140,9 @@ func Test_deleteLongPart(t *testing.T) {
 					NonTerminal: "[new_NT_2]",
 					Rights: []models.ProductionBody{
 						{
-							Body: []models.SymbolsBtw{
-								{
-									"S",
-								},
-								{
-									"S",
-								},
+							Body: []string{
+								"S",
+								"S",
 							},
 						},
 					},
@@ -200,10 +151,8 @@ func Test_deleteLongPart(t *testing.T) {
 					NonTerminal: "B",
 					Rights: []models.ProductionBody{
 						{
-							Body: []models.SymbolsBtw{
-								{
-									"a",
-								},
+							Body: []string{
+								"a",
 							},
 						},
 					},

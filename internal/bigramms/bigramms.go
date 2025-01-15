@@ -12,8 +12,8 @@ type Bigramms struct {
 	First  map[string]map[string]struct{}
 }
 
-func isNotTerminal(symbols models.SymbolsBtw) bool {
-	return !(symbols.S[0] >= 'a' && symbols.S[0] <= 'z')
+func isNotTerminal(symbols string) bool {
+	return !(symbols[0] >= 'a' && symbols[0] <= 'z')
 }
 
 func union(dest map[string]struct{}, src map[string]struct{}) map[string]struct{} {
@@ -38,19 +38,19 @@ func makeFirstAndLastRec(
 	visited[nt] = struct{}{}
 
 	// todo not cool function name
-	step := func(targetSet map[string]map[string]struct{}, smb models.SymbolsBtw) {
+	step := func(targetSet map[string]map[string]struct{}, smb string) {
 		if isNotTerminal(smb) {
-			if _, ok := visited[smb.S]; !ok {
-				makeFirstAndLastRec(g, visited, smb.S, targetSet, last)
+			if _, ok := visited[smb]; !ok {
+				makeFirstAndLastRec(g, visited, smb, targetSet, last)
 			}
 
-			targetSet[nt] = union(targetSet[nt], targetSet[smb.S])
+			targetSet[nt] = union(targetSet[nt], targetSet[smb])
 		} else {
 			if _, ok := targetSet[nt]; !ok {
 				targetSet[nt] = make(map[string]struct{})
 			}
 
-			targetSet[nt][smb.S] = struct{}{}
+			targetSet[nt][smb] = struct{}{}
 		}
 	}
 
@@ -85,8 +85,8 @@ func checkFollow(
 	changed := false
 
 	isChanged := func(rightRule models.ProductionBody) bool {
-		for terminal := range first[rightRule.Body[1].S] {
-			if _, ok := follow[rightRule.Body[0].S][terminal]; !ok {
+		for terminal := range first[rightRule.Body[1]] {
+			if _, ok := follow[rightRule.Body[0]][terminal]; !ok {
 				return true
 			}
 		}
@@ -99,9 +99,9 @@ func checkFollow(
 			if len(rightRule.Body) > 1 {
 				changed = isChanged(rightRule)
 
-				follow[rightRule.Body[0].S] = union(
-					follow[rightRule.Body[0].S],
-					first[rightRule.Body[1].S],
+				follow[rightRule.Body[0]] = union(
+					follow[rightRule.Body[0]],
+					first[rightRule.Body[1]],
 				)
 			}
 		}
@@ -132,8 +132,8 @@ func checkPrecede(
 	changed := false
 
 	isChanged := func(rightRule models.ProductionBody) bool {
-		for terminal := range last[rightRule.Body[0].S] {
-			if _, ok := precede[rightRule.Body[1].S][terminal]; !ok {
+		for terminal := range last[rightRule.Body[0]] {
+			if _, ok := precede[rightRule.Body[1]][terminal]; !ok {
 				return true
 			}
 		}
@@ -146,9 +146,9 @@ func checkPrecede(
 			if len(rightRule.Body) > 1 {
 				changed = isChanged(rightRule)
 
-				precede[rightRule.Body[1].S] = union(
-					precede[rightRule.Body[1].S],
-					last[rightRule.Body[0].S],
+				precede[rightRule.Body[1]] = union(
+					precede[rightRule.Body[1]],
+					last[rightRule.Body[0]],
 				)
 			}
 		}
@@ -213,7 +213,7 @@ func pairChecking(g *grammar.Grammar) func(y1, y2 string) bool {
 	for _, rules := range g.Grammar {
 		for _, rule := range rules.Rights {
 			if len(rule.Body) == 2 {
-				exists[fmt.Sprintf("%s %s", rule.Body[0].S, rule.Body[1].S)] = struct{}{}
+				exists[fmt.Sprintf("%s %s", rule.Body[0], rule.Body[1])] = struct{}{}
 			}
 		}
 	}

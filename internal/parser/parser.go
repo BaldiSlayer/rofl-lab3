@@ -23,7 +23,7 @@ func removeSpacesAndStrip(s string) string {
 	return trimmed
 }
 
-func (p *Parser) parseBetweenBrackets(s string) models.SymbolsBtw {
+func (p *Parser) parseBetweenBrackets(s string) string {
 	var sb strings.Builder
 
 	sb.WriteByte('[')
@@ -34,35 +34,29 @@ func (p *Parser) parseBetweenBrackets(s string) models.SymbolsBtw {
 		if sym == ']' {
 			p.pos += sb.Len() + 1
 
-			return models.SymbolsBtw{
-				S: sb.String(),
-			}
+			return sb.String()
 		}
 	}
 
-	return models.SymbolsBtw{}
+	return ""
 }
 
 func isNumeric(symbol byte) bool {
 	return symbol >= '0' && symbol <= '9'
 }
 
-func (p *Parser) parseCapitals(s string) models.SymbolsBtw {
+func (p *Parser) parseCapitals(s string) string {
 	if len(s) > 1 && isNumeric(s[1]) {
 		p.pos++
 
-		return models.SymbolsBtw{
-			S: string(s[0]) + string(s[p.pos+1]),
-		}
+		return string(s[0]) + string(s[p.pos+1])
 	}
 
-	return models.SymbolsBtw{
-		S: string(s[0]),
-	}
+	return string(s[0])
 }
 
 func (p *Parser) parseProductionBody(s string) models.ProductionBody {
-	body := make([]models.SymbolsBtw, 0, len(s))
+	body := make([]string, 0, len(s))
 
 	p.pos = 0
 
@@ -82,10 +76,7 @@ func (p *Parser) parseProductionBody(s string) models.ProductionBody {
 		}
 
 		// I will panic on wrong data, should I check it?
-		body = append(body, models.SymbolsBtw{
-			S: string(s[i]),
-		})
-
+		body = append(body, string(s[i]))
 	}
 
 	return models.ProductionBody{

@@ -1,11 +1,7 @@
 package models
 
-type SymbolsBtw struct {
-	S string
-}
-
 type ProductionBody struct {
-	Body []SymbolsBtw
+	Body []string
 }
 
 type Rule struct {

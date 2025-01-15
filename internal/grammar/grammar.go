@@ -7,8 +7,8 @@ type Grammar struct {
 	Grammar map[string]models.Rule
 }
 
-func isTerminal(symbols models.SymbolsBtw) bool {
-	return symbols.S[0] >= 'a' && symbols.S[0] <= 'z'
+func isTerminal(symbols string) bool {
+	return symbols[0] >= 'a' && symbols[0] <= 'z'
 }
 
 func extractTerminalsFromRule(rule models.ProductionBody) []string {
@@ -16,7 +16,7 @@ func extractTerminalsFromRule(rule models.ProductionBody) []string {
 
 	for _, smb := range rule.Body {
 		if isTerminal(smb) {
-			terminals = append(terminals, smb.S)
+			terminals = append(terminals, smb)
 		}
 	}
 

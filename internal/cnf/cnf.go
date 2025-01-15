@@ -9,12 +9,12 @@ import (
 
 type CNF struct{}
 
-func isNotTerminal(symbols models.SymbolsBtw) bool {
-	return !(symbols.S[0] >= 'a' && symbols.S[0] <= 'z')
+func isNotTerminal(symbols string) bool {
+	return !(symbols[0] >= 'a' && symbols[0] <= 'z')
 }
 
-func isTerminal(symbols models.SymbolsBtw) bool {
-	return symbols.S[0] >= 'a' && symbols.S[0] <= 'z'
+func isTerminal(symbols string) bool {
+	return symbols[0] >= 'a' && symbols[0] <= 'z'
 }
 
 func mergeGrammars(parent *grammar.Grammar, child *grammar.Grammar) *grammar.Grammar {
@@ -56,13 +56,9 @@ func deleteLongPart(rule models.Rule, idGetter func() int) []models.Rule {
 			NonTerminal: rule.NonTerminal,
 			Rights: []models.ProductionBody{
 				{
-					Body: []models.SymbolsBtw{
-						{
-							r.Body[0].S,
-						},
-						{
-							newNT,
-						},
+					Body: []string{
+						r.Body[0],
+						newNT,
 					},
 				},
 			},
@@ -96,8 +92,8 @@ func deleteLongRules(g *grammar.Grammar) *grammar.Grammar {
 	return grammar.New(rules)
 }
 
-func getNonTerminalsOfProductionBody(pBody models.ProductionBody) map[models.SymbolsBtw]struct{} {
-	nts := make(map[models.SymbolsBtw]struct{}, 0)
+func getNonTerminalsOfProductionBody(pBody models.ProductionBody) map[string]struct{} {
+	nts := make(map[string]struct{}, 0)
 
 	for _, symbol := range pBody.Body {
 		if isNotTerminal(symbol) {
@@ -108,8 +104,8 @@ func getNonTerminalsOfProductionBody(pBody models.ProductionBody) map[models.Sym
 	return nts
 }
 
-func getNonTerminalsOfRule(rule models.Rule) map[models.SymbolsBtw]struct{} {
-	nts := make(map[models.SymbolsBtw]struct{}, 2*len(rule.Rights))
+func getNonTerminalsOfRule(rule models.Rule) map[string]struct{} {
+	nts := make(map[string]struct{}, 2*len(rule.Rights))
 
 	for _, pBody := range rule.Rights {
 		for notTerminal := range getNonTerminalsOfProductionBody(pBody) {
@@ -129,10 +125,10 @@ func deleteChainRulesIteratively(nt string, g *grammar.Grammar, visited map[stri
 	visited[nt] = struct{}{}
 
 	for symbol := range getNonTerminalsOfRule(g.Grammar[nt]) {
-		if _, ok := visited[symbol.S]; !ok {
+		if _, ok := visited[symbol]; !ok {
 			newGrammar = mergeGrammars(
 				newGrammar,
-				deleteChainRulesIteratively(symbol.S, g, visited),
+				deleteChainRulesIteratively(symbol, g, visited),
 			)
 		}
 	}
@@ -145,7 +141,7 @@ func deleteChainRulesIteratively(nt string, g *grammar.Grammar, visited map[stri
 		// если тело продукции - цепное правило, то все его правила
 		// прикрепляем к нетерминалу nt
 		if len(pBody.Body) == 1 && isNotTerminal(pBody.Body[0]) {
-			ntPBs := g.Grammar[pBody.Body[0].S].Rights
+			ntPBs := g.Grammar[pBody.Body[0]].Rights
 			newRule.Rights = append(newRule.Rights, ntPBs...)
 
 			continue
@@ -169,7 +165,7 @@ func deleteChainRules(g *grammar.Grammar) *grammar.Grammar {
 
 func pbContainsNT(body models.ProductionBody, nt string) bool {
 	for _, elem := range body.Body {
-		if elem.S == nt {
+		if elem == nt {
 			return true
 		}
 	}
@@ -289,8 +285,8 @@ func findNonReachable(start string, g *grammar.Grammar, visited map[string]struc
 
 	for _, rightRule := range g.Grammar[start].Rights {
 		for _, smb := range rightRule.Body {
-			if _, ok := visited[smb.S]; !ok {
-				visited = findNonReachable(smb.S, g, visited)
+			if _, ok := visited[smb]; !ok {
+				visited = findNonReachable(smb, g, visited)
 			}
 		}
 	}
@@ -326,7 +322,7 @@ func replacePairedTerminals(
 				NonTerminal: name,
 				Rights: []models.ProductionBody{
 					{
-						Body: []models.SymbolsBtw{
+						Body: []string{
 							pb.Body[0],
 						},
 					},
@@ -334,8 +330,8 @@ func replacePairedTerminals(
 			})
 
 			return models.ProductionBody{
-				Body: []models.SymbolsBtw{
-					{name}, {name},
+				Body: []string{
+					name, name,
 				},
 			}, rules
 		}
