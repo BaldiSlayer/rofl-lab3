@@ -1,10 +1,11 @@
 package cnf
 
 import (
+	"testing"
+
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func Test_deleteLongPart(t *testing.T) {

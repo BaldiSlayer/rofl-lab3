@@ -1,8 +1,9 @@
 package parser
 
 import (
-	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 	"testing"
+
+	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 
 	"github.com/stretchr/testify/require"
 )

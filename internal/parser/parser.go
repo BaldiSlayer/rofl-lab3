@@ -1,10 +1,11 @@
 package parser
 
 import (
-	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
-	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 	"strings"
 	"unicode"
+
+	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
+	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 )
 
 type Parser struct {

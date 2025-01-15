@@ -1,10 +1,11 @@
 package cyk
 
 import (
+	"testing"
+
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestCYK_Check_1(t *testing.T) {

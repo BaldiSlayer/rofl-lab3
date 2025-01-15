@@ -2,12 +2,35 @@ package cnf
 
 import (
 	"fmt"
+
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 	"github.com/BaldiSlayer/rofl-lab3/pkg/queue"
 )
 
 type CNF struct {
+}
+
+func isNotTerminal(symbols models.SymbolsBtw) bool {
+	return !(symbols.S[0] >= 'a' && symbols.S[0] <= 'z')
+}
+
+func mergeNTMaps(all map[string]struct{}, child map[models.SymbolsBtw]struct{}) map[string]struct{} {
+	for ch := range child {
+		all[ch.S] = struct{}{}
+	}
+
+	return all
+}
+
+func mergeGrammars(parent *grammar.Grammar, child *grammar.Grammar) *grammar.Grammar {
+	newGrammar := *parent
+
+	for _, rule := range child.Grammar {
+		newGrammar.Grammar[rule.NonTerminal] = rule
+	}
+
+	return &newGrammar
 }
 
 func newIDGetter() func() int {
@@ -79,10 +102,6 @@ func deleteLongRules(g *grammar.Grammar) *grammar.Grammar {
 	return grammar.New(rules)
 }
 
-func isNotTerminal(symbols models.SymbolsBtw) bool {
-	return !(symbols.S[0] >= 'a' && symbols.S[0] <= 'z')
-}
-
 func getNonTerminalsOfProductionBody(pBody models.ProductionBody) map[models.SymbolsBtw]struct{} {
 	nts := make(map[models.SymbolsBtw]struct{}, 0)
 
@@ -105,16 +124,6 @@ func getNonTerminalsOfRule(rule models.Rule) map[models.SymbolsBtw]struct{} {
 	}
 
 	return nts
-}
-
-func mergeGrammars(parent *grammar.Grammar, child *grammar.Grammar) *grammar.Grammar {
-	newGrammar := *parent
-
-	for _, rule := range child.Grammar {
-		newGrammar.Grammar[rule.NonTerminal] = rule
-	}
-
-	return &newGrammar
 }
 
 func deleteChainRulesIteratively(nt string, g *grammar.Grammar, visited map[string]struct{}) *grammar.Grammar {
@@ -164,15 +173,7 @@ func deleteChainRules(g *grammar.Grammar) *grammar.Grammar {
 	return newGrammar
 }
 
-func mergeNTMaps(all map[string]struct{}, child map[models.SymbolsBtw]struct{}) map[string]struct{} {
-	for ch := range child {
-		all[ch.S] = struct{}{}
-	}
-
-	return all
-}
-
-// https://neerc.ifmo.ru/wiki/index.php?title=Удаление_eps-правил_из_грамматики
+// https://neerc.ifmo.ru/wiki/index.php?title=Удаление_бесполезных_символов_из_грамматики
 func deleteNonGenerative(g *grammar.Grammar) *grammar.Grammar {
 	concernedRules := make(map[string][]int)
 	counter := make(map[int]int)
@@ -225,7 +226,7 @@ func deleteNonGenerative(g *grammar.Grammar) *grammar.Grammar {
 			counter[rule] -= 1
 
 			if counter[rule] == 0 {
-				//isGenerating
+				//isGenerating[rule]
 			}
 		}
 	}

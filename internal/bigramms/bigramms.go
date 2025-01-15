@@ -2,6 +2,7 @@ package bigramms
 
 import (
 	"fmt"
+
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 )
@@ -258,5 +259,6 @@ func (b *Bigramms) Build(g *grammar.Grammar) *Bigramms {
 
 	return &Bigramms{
 		Matrix: matrix,
+		First:  first,
 	}
 }
