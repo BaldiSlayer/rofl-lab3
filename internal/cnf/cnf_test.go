@@ -285,7 +285,7 @@ func Test_deletePairedTerminals(t *testing.T) {
 								"NT_PT_1",
 							},
 							{
-								"d",
+								"NT_PT_2",
 								"C",
 							},
 						},
@@ -306,17 +306,25 @@ func Test_deletePairedTerminals(t *testing.T) {
 							},
 						},
 					},
+					"NT_PT_2": {
+						NonTerminal: "NT_PT_2",
+						Rights: []models.ProductionBody{
+							{
+								"d",
+							},
+						},
+					},
 					"C": {
 						NonTerminal: "C",
 						Rights: []models.ProductionBody{
 							{
-								"NT_PT_2",
-								"NT_PT_2",
+								"NT_PT_3",
+								"NT_PT_3",
 							},
 						},
 					},
-					"NT_PT_2": {
-						NonTerminal: "NT_PT_2",
+					"NT_PT_3": {
+						NonTerminal: "NT_PT_3",
 						Rights: []models.ProductionBody{
 							{
 								"c",
@@ -395,7 +403,7 @@ func Test_deletePairedTerminals(t *testing.T) {
 								"NT_PT_2",
 							},
 							{
-								"c",
+								"NT_PT_3",
 								"D",
 							},
 						},
@@ -424,17 +432,25 @@ func Test_deletePairedTerminals(t *testing.T) {
 							},
 						},
 					},
+					"NT_PT_3": {
+						NonTerminal: "NT_PT_3",
+						Rights: []models.ProductionBody{
+							{
+								"c",
+							},
+						},
+					},
 					"D": {
 						NonTerminal: "D",
 						Rights: []models.ProductionBody{
 							{
-								"NT_PT_3",
-								"NT_PT_3",
+								"NT_PT_4",
+								"NT_PT_4",
 							},
 						},
 					},
-					"NT_PT_3": {
-						NonTerminal: "NT_PT_3",
+					"NT_PT_4": {
+						NonTerminal: "NT_PT_4",
 						Rights: []models.ProductionBody{
 							{
 								"a",
@@ -451,6 +467,105 @@ func Test_deletePairedTerminals(t *testing.T) {
 			input := parser.New().Parse(tt.input)
 
 			result := deletePairedTerminals(input)
+
+			require.Equal(t, tt.want, result)
+		})
+	}
+}
+
+func TestCNF_ToCNF(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  *grammar.Grammar
+	}{
+		{
+			name:  "1",
+			input: "S -> cA | dA | cB | eB\nA -> a\nB -> b",
+			want: &grammar.Grammar{
+				Start: "S",
+				Grammar: map[string]models.Rule{
+					"S": {
+						NonTerminal: "S",
+						Rights: []models.ProductionBody{
+							{
+								"NT_PT_0",
+								"A",
+							},
+							{
+								"NT_PT_1",
+								"A",
+							},
+							{
+								"NT_PT_2",
+								"B",
+							},
+							{
+								"NT_PT_3",
+								"B",
+							},
+						},
+					},
+					"A": {
+						NonTerminal: "A",
+						Rights: []models.ProductionBody{
+							{
+								"a",
+							},
+						},
+					},
+					"B": {
+						NonTerminal: "B",
+						Rights: []models.ProductionBody{
+							{
+								"b",
+							},
+						},
+					},
+					"NT_PT_0": {
+						NonTerminal: "NT_PT_0",
+						Rights: []models.ProductionBody{
+							{
+								"c",
+							},
+						},
+					},
+					"NT_PT_1": {
+						NonTerminal: "NT_PT_1",
+						Rights: []models.ProductionBody{
+							{
+								"d",
+							},
+						},
+					},
+					"NT_PT_2": {
+						NonTerminal: "NT_PT_2",
+						Rights: []models.ProductionBody{
+							{
+								"c",
+							},
+						},
+					},
+					"NT_PT_3": {
+						NonTerminal: "NT_PT_3",
+						Rights: []models.ProductionBody{
+							{
+								"e",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cnf := &CNF{}
+
+			input := parser.New().Parse(tt.input)
+
+			result := cnf.ToCNF(input)
 
 			require.Equal(t, tt.want, result)
 		})

@@ -307,50 +307,38 @@ func replacePairedTerminals(
 	genNT func() string,
 ) (models.ProductionBody, []models.Rule) {
 	rules := make([]models.Rule, 0)
+	pBody := make(models.ProductionBody, 0)
 
-	if len(pb) == 2 && isTerminal(pb[0]) && isTerminal(pb[1]) {
-		if pb[0] == pb[1] {
-			name := genNT()
+	checkSmb := func(smb string) {
+		name := smb
+
+		if isTerminal(smb) {
+			if len(rules) != 0 && pb[0] == pb[1] {
+				pBody = append(pBody, rules[0].NonTerminal)
+
+				return
+			}
+
+			name = genNT()
 
 			rules = append(rules, models.Rule{
 				NonTerminal: name,
 				Rights: []models.ProductionBody{
 					{
-						pb[0],
+						smb,
 					},
 				},
 			})
-
-			return models.ProductionBody{
-				name, name,
-			}, rules
 		}
 
-		name1 := genNT()
-		name2 := genNT()
+		pBody = append(pBody, name)
+	}
 
-		rules = append(rules,
-			models.Rule{
-				NonTerminal: name1,
-				Rights: []models.ProductionBody{
-					{
-						pb[0],
-					},
-				},
-			},
-			models.Rule{
-				NonTerminal: name2,
-				Rights: []models.ProductionBody{
-					{
-						pb[1],
-					},
-				},
-			},
-		)
+	if len(pb) == 2 {
+		checkSmb(pb[0])
+		checkSmb(pb[1])
 
-		return models.ProductionBody{
-			name1, name2,
-		}, rules
+		return pBody, rules
 	}
 
 	return pb, rules
