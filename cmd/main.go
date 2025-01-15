@@ -52,6 +52,7 @@ func main() {
 		parser.New(),
 		&cnf.CNF{},
 		&bigramms.Bigramms{},
+		"S",
 	)
 
 	results := fuzz.Generate(n, someValue, startSmb)

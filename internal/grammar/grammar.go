@@ -53,7 +53,7 @@ func (g *Grammar) GetProductionsSlice() []models.Rule {
 	return rules
 }
 
-func New(rules []models.Rule) *Grammar {
+func New(rules []models.Rule, startSymbol string) *Grammar {
 	g := make(map[string]models.Rule, len(rules))
 
 	for _, rule := range rules {
@@ -72,6 +72,6 @@ func New(rules []models.Rule) *Grammar {
 	// todo убрать хардкод стартового, вынести это в параметры
 	return &Grammar{
 		Grammar: g,
-		Start:   "S",
+		Start:   startSymbol,
 	}
 }

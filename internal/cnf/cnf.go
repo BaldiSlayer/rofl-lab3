@@ -83,7 +83,7 @@ func deleteLongRules(g *grammar.Grammar) *grammar.Grammar {
 		rules = append(rules, deleteLongPart(rule, idGetter)...)
 	}
 
-	return grammar.New(rules)
+	return grammar.New(rules, g.Start)
 }
 
 func getNonTerminalsOfProductionBody(pBody models.ProductionBody) map[string]struct{} {

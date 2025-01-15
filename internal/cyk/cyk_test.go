@@ -8,7 +8,7 @@ import (
 )
 
 func TestCYK_Check_1(t *testing.T) {
-	input := parser.New().Parse("S -> a")
+	input := parser.New().Parse("S -> a", "S")
 
 	tests := []struct {
 		name string
@@ -37,7 +37,7 @@ func TestCYK_Check_1(t *testing.T) {
 }
 
 func TestCYK_Check_2(t *testing.T) {
-	input := parser.New().Parse("S -> AA\nA -> a")
+	input := parser.New().Parse("S -> AA\nA -> a", "S")
 
 	tests := []struct {
 		name string
@@ -66,7 +66,7 @@ func TestCYK_Check_2(t *testing.T) {
 }
 
 func TestCYK_Check_PSP(t *testing.T) {
-	input := parser.New().Parse("S -> BB | CD\nB -> BB | CD\nC -> a\nD -> BE | b\nE -> b")
+	input := parser.New().Parse("S -> BB | CD\nB -> BB | CD\nC -> a\nD -> BE | b\nE -> b", "S")
 
 	tests := []struct {
 		name string

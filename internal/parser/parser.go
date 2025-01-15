@@ -119,10 +119,10 @@ func (p *Parser) parseLines(lines []string) []models.Rule {
 	return rules
 }
 
-func (p *Parser) Parse(input string) *grammar.Grammar {
+func (p *Parser) Parse(input string, startSymbol string) *grammar.Grammar {
 	lines := strings.Split(input, "\n")
 
 	rules := p.parseLines(lines)
 
-	return grammar.New(rules)
+	return grammar.New(rules, startSymbol)
 }

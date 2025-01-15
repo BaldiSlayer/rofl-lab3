@@ -11,7 +11,7 @@ import (
 )
 
 type Parser interface {
-	Parse(s string) *grammar.Grammar
+	Parse(s string, startSymbol string) *grammar.Grammar
 }
 
 type CNFer interface {
@@ -24,8 +24,8 @@ type Fuzzer struct {
 	g       *grammar.Grammar
 }
 
-func New(s string, p Parser, cnf CNFer, b *bigramms.Bigramms) *Fuzzer {
-	gram := p.Parse(s)
+func New(s string, p Parser, cnf CNFer, b *bigramms.Bigramms, startSymbol string) *Fuzzer {
+	gram := p.Parse(s, startSymbol)
 
 	gCNF := cnf.ToCNF(gram)
 

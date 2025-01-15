@@ -165,8 +165,8 @@ func Test_deleteChainRules(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			expected := parser.New().Parse(tt.want)
-			input := parser.New().Parse(tt.input)
+			expected := parser.New().Parse(tt.want, "S")
+			input := parser.New().Parse(tt.input, "S")
 
 			result := deleteChainRules(input)
 
@@ -195,8 +195,8 @@ func Test_deleteNonGenerative(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			expected := parser.New().Parse(tt.want)
-			input := parser.New().Parse(tt.input)
+			expected := parser.New().Parse(tt.want, "S")
+			input := parser.New().Parse(tt.input, "S")
 
 			result := deleteNonGenerative(input)
 
@@ -225,8 +225,8 @@ func Test_deleteNonReachable(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			expected := parser.New().Parse(tt.want)
-			input := parser.New().Parse(tt.input)
+			expected := parser.New().Parse(tt.want, "S")
+			input := parser.New().Parse(tt.input, "S")
 
 			result := deleteNonReachable(input)
 
@@ -464,7 +464,7 @@ func Test_deletePairedTerminals(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			input := parser.New().Parse(tt.input)
+			input := parser.New().Parse(tt.input, "S")
 
 			result := deletePairedTerminals(input)
 
@@ -563,7 +563,7 @@ func TestCNF_ToCNF(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cnf := &CNF{}
 
-			input := parser.New().Parse(tt.input)
+			input := parser.New().Parse(tt.input, "S")
 
 			result := cnf.ToCNF(input)
 
