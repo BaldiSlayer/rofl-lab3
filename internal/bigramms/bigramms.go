@@ -16,6 +16,10 @@ func isNotTerminal(symbols models.SymbolsBtw) bool {
 }
 
 func union(dest map[string]struct{}, src map[string]struct{}) map[string]struct{} {
+	if dest == nil {
+		dest = make(map[string]struct{})
+	}
+
 	for key := range src {
 		dest[key] = struct{}{}
 	}
@@ -41,6 +45,10 @@ func makeFirstAndLastRec(
 
 			targetSet[nt] = union(targetSet[nt], targetSet[smb.S])
 		} else {
+			if _, ok := targetSet[nt]; !ok {
+				targetSet[nt] = make(map[string]struct{})
+			}
+
 			targetSet[nt][smb.S] = struct{}{}
 		}
 	}
