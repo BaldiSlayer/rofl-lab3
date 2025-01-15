@@ -8,6 +8,14 @@ import (
 	"github.com/BaldiSlayer/rofl-lab3/internal/parser"
 )
 
+const (
+	n = 100
+	// todo rename
+	someValue = 0.1
+
+	startSmb = "S"
+)
+
 func main() {
 	input := ""
 
@@ -18,7 +26,7 @@ func main() {
 		&bigramms.Bigramms{},
 	)
 
-	results := fuzz.Generate(100, 0.1, "S")
+	results := fuzz.Generate(n, someValue, startSmb)
 	for _, line := range results {
 		fmt.Println(line)
 	}
