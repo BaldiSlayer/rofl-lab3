@@ -20,14 +20,14 @@ func Test_parseBetweenBrackets(t *testing.T) {
 		{
 			name: "first",
 			args: args{
-				input: "aba]",
+				input: "[aba]",
 			},
 			want: "[aba]",
 		},
 		{
 			name: "second",
 			args: args{
-				input: "fasdfasdfsda]",
+				input: "[fasdfasdfsda]",
 			},
 			want: "[fasdfasdfsda]",
 		},
@@ -160,6 +160,22 @@ func TestParser_parseLine(t *testing.T) {
 						"S",
 						"S",
 						"S",
+					},
+				},
+			},
+		},
+		{
+			name: "name",
+			args: args{
+				s: "S -> [order66]ab",
+			},
+			want: models.Rule{
+				NonTerminal: "S",
+				Rights: []models.ProductionBody{
+					{
+						"[order66]",
+						"a",
+						"b",
 					},
 				},
 			},

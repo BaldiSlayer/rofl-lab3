@@ -26,13 +26,11 @@ func removeSpacesAndStrip(s string) string {
 func (p *Parser) parseBetweenBrackets(s string) string {
 	var sb strings.Builder
 
-	sb.WriteByte('[')
-
 	for _, sym := range s {
 		sb.WriteByte(byte(sym))
 
 		if sym == ']' {
-			p.pos += sb.Len() + 1
+			p.pos += sb.Len() - 1
 
 			return sb.String()
 		}

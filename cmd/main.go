@@ -45,7 +45,13 @@ func inputLines() string {
 }
 
 func main() {
-	input := inputLines()
+	//input := inputLines()
+	input := `
+S -> [order66]ab
+S -> B
+B -> [order66]
+[order66] -> a
+D -> A`
 
 	fuzz := fuzzer.New(
 		input,

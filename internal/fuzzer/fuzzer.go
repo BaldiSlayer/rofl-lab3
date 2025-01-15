@@ -35,6 +35,7 @@ func New(s string, p Parser, cnf CNFer, b *bigramms.Bigramms, startSymbol string
 	return &Fuzzer{
 		bigramm: bm,
 		cyk:     c,
+		g:       gCNF,
 	}
 }
 
@@ -63,7 +64,7 @@ func randomKeyFromMap(m map[string]struct{}) string {
 }
 
 func (f *Fuzzer) genString(terminals []string, someValue float64, startSmb string) string {
-	res := randomKeyFromMap(f.bigramm.First[""])
+	res := randomKeyFromMap(f.bigramm.First[startSmb])
 	lastSmb := res
 
 	for true {
