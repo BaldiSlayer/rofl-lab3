@@ -190,12 +190,40 @@ func extractTerminalsFromGrammar(g *grammar.Grammar) []string {
 	return terminals
 }
 
+// very bad function
 func needToAdd(
 	y1, y2 string,
 	first, last, follow, precede map[string]map[string]struct{},
 ) bool {
+	for a1 := range last {
+		_, ok1 := last[a1][y1]
+		_, ok2 := follow[a1][y2]
 
-	return true
+		if ok1 && ok2 {
+			return true
+		}
+	}
+
+	for a1 := range precede {
+		_, ok1 := precede[a1][y1]
+		_, ok2 := first[a1][y2]
+
+		if ok1 && ok2 {
+			return true
+		}
+	}
+
+	for a1 := range last {
+		_, ok1 := last[a1][y1]
+		_, ok2 := first[a1][y1]
+		_, ok3 := follow[a1][y2]
+
+		if ok1 && ok2 && ok3 {
+			return true
+		}
+	}
+
+	return false
 }
 
 func pairChecking(g *grammar.Grammar) func(y1, y2 string) bool {
