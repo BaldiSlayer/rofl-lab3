@@ -7,6 +7,34 @@ type Grammar struct {
 	Grammar map[string]models.Rule
 }
 
+func isTerminal(symbols models.SymbolsBtw) bool {
+	return symbols.S[0] >= 'a' && symbols.S[0] <= 'z'
+}
+
+func extractTerminalsFromRule(rule models.ProductionBody) []string {
+	terminals := make([]string, 0)
+
+	for _, smb := range rule.Body {
+		if isTerminal(smb) {
+			terminals = append(terminals, smb.S)
+		}
+	}
+
+	return terminals
+}
+
+func (g *Grammar) ExtractTerminals() []string {
+	terminals := make([]string, 0, len(g.Grammar))
+
+	for _, rules := range g.Grammar {
+		for _, rule := range rules.Rights {
+			terminals = append(terminals, extractTerminalsFromRule(rule)...)
+		}
+	}
+
+	return terminals
+}
+
 func New(rules []models.Rule) *Grammar {
 	g := make(map[string]models.Rule, len(rules))
 

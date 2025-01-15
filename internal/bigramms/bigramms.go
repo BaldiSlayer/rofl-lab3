@@ -8,15 +8,11 @@ import (
 
 type Bigramms struct {
 	Matrix map[string]map[string]struct{}
+	First  map[string]map[string]struct{}
 }
 
 func isNotTerminal(symbols models.SymbolsBtw) bool {
 	return !(symbols.S[0] >= 'a' && symbols.S[0] <= 'z')
-}
-
-// todo is terminal must be normal
-func isTerminal(symbols models.SymbolsBtw) bool {
-	return !isNotTerminal(symbols)
 }
 
 func union(dest map[string]struct{}, src map[string]struct{}) map[string]struct{} {
@@ -166,30 +162,6 @@ func makePrecede(g *grammar.Grammar, first map[string]map[string]struct{}) map[s
 	}
 }
 
-func extractTerminalsFromRule(rule models.ProductionBody) []string {
-	terminals := make([]string, 0)
-
-	for _, smb := range rule.Body {
-		if isTerminal(smb) {
-			terminals = append(terminals, smb.S)
-		}
-	}
-
-	return terminals
-}
-
-func extractTerminalsFromGrammar(g *grammar.Grammar) []string {
-	terminals := make([]string, 0, len(g.Grammar))
-
-	for _, rules := range g.Grammar {
-		for _, rule := range rules.Rights {
-			terminals = append(terminals, extractTerminalsFromRule(rule)...)
-		}
-	}
-
-	return terminals
-}
-
 // very bad function
 func needToAdd(
 	y1, y2 string,
@@ -251,7 +223,7 @@ func makeBigramMatrix(
 	bigramms := make(map[string]map[string]struct{})
 
 	pairChecker := pairChecking(g)
-	terminals := extractTerminalsFromGrammar(g)
+	terminals := g.ExtractTerminals()
 
 	// am i need to check that y1 != y2?
 	for _, y1 := range terminals {
