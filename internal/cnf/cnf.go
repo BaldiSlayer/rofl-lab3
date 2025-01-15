@@ -13,6 +13,10 @@ func isNotTerminal(symbols models.SymbolsBtw) bool {
 	return !(symbols.S[0] >= 'a' && symbols.S[0] <= 'z')
 }
 
+func isTerminal(symbols models.SymbolsBtw) bool {
+	return symbols.S[0] >= 'a' && symbols.S[0] <= 'z'
+}
+
 func mergeGrammars(parent *grammar.Grammar, child *grammar.Grammar) *grammar.Grammar {
 	newGrammar := *parent
 
@@ -308,7 +312,70 @@ func deleteNonReachable(g *grammar.Grammar) *grammar.Grammar {
 	return g
 }
 
-func deleteAloneTerminals(g *grammar.Grammar) *grammar.Grammar {
+func replacePairedTerminals(
+	pb models.ProductionBody,
+	genNT func() string,
+) (models.ProductionBody, []models.Rule) {
+	rules := make([]models.Rule, 0)
+
+	if len(pb.Body) == 2 && isTerminal(pb.Body[0]) && isTerminal(pb.Body[1]) {
+		if pb.Body[0] == pb.Body[1] {
+			name := genNT()
+
+			rules = append(rules, models.Rule{
+				NonTerminal: name,
+				Rights: []models.ProductionBody{
+					{
+						Body: []models.SymbolsBtw{
+							pb.Body[0],
+						},
+					},
+				},
+			})
+
+			return models.ProductionBody{
+				Body: []models.SymbolsBtw{
+					{name}, {name},
+				},
+			}, rules
+		}
+
+		// todo разные
+	}
+
+	return pb, rules
+}
+
+func deletePairedTerminals(g *grammar.Grammar) *grammar.Grammar {
+	i := -1
+
+	genNTName := func() string {
+		i++
+		return fmt.Sprintf("NT_PT_%d", i)
+	}
+
+	replacements := make([]models.Rule, 0)
+
+	for nt, rules := range g.Grammar {
+		newRights := make([]models.ProductionBody, 0, len(rules.Rights))
+
+		for _, pb := range rules.Rights {
+			newPB, r := replacePairedTerminals(pb, genNTName)
+
+			newRights = append(newRights, newPB)
+			replacements = append(replacements, r...)
+		}
+
+		g.Grammar[nt] = models.Rule{
+			NonTerminal: nt,
+			Rights:      newRights,
+		}
+	}
+
+	for _, r := range replacements {
+		g.Grammar[r.NonTerminal] = r
+	}
+
 	return g
 }
 
@@ -318,7 +385,7 @@ func (cnf *CNF) ToCNF(g *grammar.Grammar) *grammar.Grammar {
 		deleteChainRules,
 		deleteNonGenerative,
 		deleteNonReachable,
-		deleteAloneTerminals,
+		deletePairedTerminals,
 	}
 
 	// TODO it looks bad, I don't like it, but writing 7 function calls and declaring
