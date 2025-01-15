@@ -35,6 +35,24 @@ func (g *Grammar) ExtractTerminals() []string {
 	return terminals
 }
 
+// GetProductionsSlice creates a slide with rules. Necessary for a constant order
+func (g *Grammar) GetProductionsSlice() []models.Rule {
+	rules := make([]models.Rule, 0, len(g.Grammar))
+
+	for _, pbs := range g.Grammar {
+		for _, rightRule := range pbs.Rights {
+			rules = append(rules, models.Rule{
+				NonTerminal: pbs.NonTerminal,
+				Rights: []models.ProductionBody{
+					rightRule,
+				},
+			})
+		}
+	}
+
+	return rules
+}
+
 func New(rules []models.Rule) *Grammar {
 	g := make(map[string]models.Rule, len(rules))
 
@@ -51,7 +69,9 @@ func New(rules []models.Rule) *Grammar {
 		}
 	}
 
+	// todo убрать хардкод стартового, вынести это в параметры
 	return &Grammar{
 		Grammar: g,
+		Start:   "S",
 	}
 }

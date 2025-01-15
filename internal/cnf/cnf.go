@@ -2,14 +2,12 @@ package cnf
 
 import (
 	"fmt"
-
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 	"github.com/BaldiSlayer/rofl-lab3/pkg/queue"
 )
 
-type CNF struct {
-}
+type CNF struct{}
 
 func isNotTerminal(symbols models.SymbolsBtw) bool {
 	return !(symbols.S[0] >= 'a' && symbols.S[0] <= 'z')
@@ -115,7 +113,7 @@ func getNonTerminalsOfProductionBody(pBody models.ProductionBody) map[models.Sym
 }
 
 func getNonTerminalsOfRule(rule models.Rule) map[models.SymbolsBtw]struct{} {
-	nts := make(map[models.SymbolsBtw]struct{}, 0)
+	nts := make(map[models.SymbolsBtw]struct{}, 2*len(rule.Rights))
 
 	for _, pBody := range rule.Rights {
 		for notTerminal := range getNonTerminalsOfProductionBody(pBody) {
@@ -173,60 +171,50 @@ func deleteChainRules(g *grammar.Grammar) *grammar.Grammar {
 	return newGrammar
 }
 
-// https://neerc.ifmo.ru/wiki/index.php?title=Удаление_бесполезных_символов_из_грамматики
-func deleteNonGenerative(g *grammar.Grammar) *grammar.Grammar {
-	concernedRules := make(map[string][]int)
-	counter := make(map[int]int)
-	isGenerating := make(map[string]bool)
-	q := &queue.Queue[string]{}
-	allNTs := make(map[string]struct{})
-
-	i := 0
-
-	for _, rule := range g.Grammar {
-		count := getNonTerminalsOfRule(rule)
-		count[models.SymbolsBtw{S: rule.NonTerminal}] = struct{}{}
-
-		allNTs = mergeNTMaps(allNTs, count)
-
-		// проставляем concernedRules
-		for nt := range count {
-			if _, ok := concernedRules[nt.S]; !ok {
-				concernedRules[nt.S] = make([]int, 0)
-			}
-
-			concernedRules[nt.S] = append(concernedRules[nt.S], i)
-		}
-
-		counter[i] += len(count)
-
-		if len(count) == 0 {
-			isGenerating[rule.NonTerminal] = true
-			q.Enqueue(rule.NonTerminal)
-		}
-
-		i++
-	}
-
-	for nt := range allNTs {
-		if val := isGenerating[nt]; !val {
-			isGenerating[nt] = false
+func pbContainsNT(body models.ProductionBody, nt string) bool {
+	for _, elem := range body.Body {
+		if elem.S == nt {
+			return true
 		}
 	}
 
-	visited := make(map[string]struct{})
-	for _, elem := range q.DumpToSlice() {
-		visited[elem] = struct{}{}
+	return false
+}
+
+func ruleContainsNT(rule models.Rule, nt string) bool {
+	for _, right := range rule.Rights {
+		if pbContainsNT(right, nt) {
+			return true
+		}
 	}
 
-	for !q.IsEmpty() {
-		elem := q.Dequeue()
+	return false
+}
 
-		for _, rule := range concernedRules[elem] {
-			counter[rule] -= 1
+func deleteRulesWithNT(g *grammar.Grammar, nt string) *grammar.Grammar {
+	// удаляем нетерминалы, которые не являются порождающими
+	for ngnt := range g.Grammar {
+		if nt == ngnt {
+			delete(g.Grammar, ngnt)
+		}
+	}
 
-			if counter[rule] == 0 {
-				//isGenerating[rule]
+	// удаляем правила с их вхождением
+	for ngnt, rule := range g.Grammar {
+		for i, pb := range rule.Rights {
+			if pbContainsNT(pb, nt) {
+				newRights := append(g.Grammar[ngnt].Rights[:i], g.Grammar[ngnt].Rights[i+1:]...)
+
+				if len(newRights) == 0 {
+					delete(g.Grammar, ngnt)
+
+					break
+				}
+
+				g.Grammar[ngnt] = models.Rule{
+					NonTerminal: g.Grammar[ngnt].NonTerminal,
+					Rights:      newRights,
+				}
 			}
 		}
 	}
@@ -234,7 +222,97 @@ func deleteNonGenerative(g *grammar.Grammar) *grammar.Grammar {
 	return g
 }
 
+func determineGenerativeness(g *grammar.Grammar) map[string]bool {
+	rules := g.GetProductionsSlice()
+
+	isGenerating := make(map[string]bool, len(g.Grammar))
+	counter := make([]int, len(rules))
+	concernedRules := make(map[string][]int, len(g.Grammar))
+
+	for nt := range g.Grammar {
+		isGenerating[nt] = false
+	}
+
+	for nt := range g.Grammar {
+		a := make([]int, 0)
+
+		for i, rule := range rules {
+			if ruleContainsNT(rule, nt) {
+				a = append(a, i)
+			}
+		}
+
+		concernedRules[nt] = a
+	}
+
+	for i, rule := range rules {
+		counter[i] = len(getNonTerminalsOfRule(rule))
+	}
+
+	q := &queue.Queue[string]{}
+
+	for i := 0; i < len(counter); i++ {
+		if counter[i] == 0 {
+			q.Enqueue(rules[i].NonTerminal)
+			isGenerating[rules[i].NonTerminal] = true
+		}
+	}
+
+	for !q.IsEmpty() {
+		cur := q.Dequeue()
+
+		for _, idx := range concernedRules[cur] {
+			counter[idx]--
+
+			if counter[idx] == 0 {
+				nt := rules[idx].NonTerminal
+
+				isGenerating[nt] = true
+				q.Enqueue(nt)
+			}
+		}
+	}
+
+	return isGenerating
+}
+
+func deleteNonGenerative(g *grammar.Grammar) *grammar.Grammar {
+	isGenerating := determineGenerativeness(g)
+
+	for nt, val := range isGenerating {
+		if !val {
+			g = deleteRulesWithNT(g, nt)
+		}
+	}
+
+	return g
+}
+
+func findNonReachable(start string, g *grammar.Grammar, visited map[string]struct{}) map[string]struct{} {
+	visited[start] = struct{}{}
+
+	for _, rightRule := range g.Grammar[start].Rights {
+		for _, smb := range rightRule.Body {
+			if _, ok := visited[smb.S]; !ok {
+				visited = findNonReachable(smb.S, g, visited)
+			}
+		}
+	}
+
+	return visited
+}
+
 func deleteNonReachable(g *grammar.Grammar) *grammar.Grammar {
+	visited := make(map[string]struct{})
+
+	visited = findNonReachable(g.Start, g, visited)
+
+	for nt := range g.Grammar {
+		if _, ok := visited[nt]; !ok {
+			delete(g.Grammar, nt)
+		}
+	}
+
 	return g
 }
 

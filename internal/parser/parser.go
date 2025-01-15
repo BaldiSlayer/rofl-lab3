@@ -120,6 +120,10 @@ func (p *Parser) parseLines(lines []string) []models.Rule {
 	rules := make([]models.Rule, 0, len(lines))
 
 	for _, line := range lines {
+		if line == "" {
+			continue
+		}
+
 		rules = append(rules, p.parseLine(line))
 	}
 

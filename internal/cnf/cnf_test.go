@@ -1,6 +1,7 @@
 package cnf
 
 import (
+	"github.com/BaldiSlayer/rofl-lab3/internal/parser"
 	"testing"
 
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
@@ -313,4 +314,68 @@ func Test_deleteChainRules_1(t *testing.T) {
 	result := deleteChainRules(args)
 
 	require.Equal(t, expected, result, "")
+}
+
+//`
+//S -> Bb | Ee
+//E -> Ee`
+
+func Test_deleteNonGenerative(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{
+			name:  "from itmo",
+			input: "S -> Ac\nA->SD\nD->aD\nA->a",
+			want:  "S -> Ac\nA -> a",
+		},
+		{
+			name:  "from wiki",
+			input: "S -> Bb | Ee\nE -> Ee\nB -> b",
+			want:  "S -> Bb\nB -> b",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			expected := parser.New().Parse(tt.want)
+			input := parser.New().Parse(tt.input)
+
+			result := deleteNonGenerative(input)
+
+			require.Equal(t, expected, result)
+		})
+	}
+}
+
+func Test_deleteNonReachable(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{
+			name:  "itmo",
+			input: "S -> AB | CD\nA -> EF\nG -> AD\nC -> c",
+			want:  "S -> AB | CD\nA -> EF\nC -> c",
+		},
+		{
+			name:  "itmo",
+			input: "S -> B\nC -> c\nD -> d\nE->e",
+			want:  "S -> B",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			expected := parser.New().Parse(tt.want)
+			input := parser.New().Parse(tt.input)
+
+			result := deleteNonReachable(input)
+
+			require.Equal(t, expected, result)
+		})
+	}
 }
