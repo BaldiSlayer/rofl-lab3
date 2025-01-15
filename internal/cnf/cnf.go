@@ -13,14 +13,6 @@ func isNotTerminal(symbols models.SymbolsBtw) bool {
 	return !(symbols.S[0] >= 'a' && symbols.S[0] <= 'z')
 }
 
-func mergeNTMaps(all map[string]struct{}, child map[models.SymbolsBtw]struct{}) map[string]struct{} {
-	for ch := range child {
-		all[ch.S] = struct{}{}
-	}
-
-	return all
-}
-
 func mergeGrammars(parent *grammar.Grammar, child *grammar.Grammar) *grammar.Grammar {
 	newGrammar := *parent
 

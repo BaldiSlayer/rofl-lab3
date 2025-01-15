@@ -4,7 +4,6 @@ import (
 	"github.com/BaldiSlayer/rofl-lab3/internal/parser"
 	"testing"
 
-	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 	"github.com/stretchr/testify/require"
 )
@@ -221,104 +220,35 @@ func Test_deleteLongPart(t *testing.T) {
 	}
 }
 
-func Test_deleteChainRules_1(t *testing.T) {
-	expected := &grammar.Grammar{
-		Start: "A",
-		Grammar: map[string]models.Rule{
-			"A": {
-				NonTerminal: "A",
-				Rights: []models.ProductionBody{
-					{
-						Body: []models.SymbolsBtw{
-							{
-								"c",
-							},
-							{
-								"c",
-							},
-						},
-					},
-					{
-						Body: []models.SymbolsBtw{
-							{
-								"d",
-							},
-							{
-								"d",
-							},
-						},
-					},
-				},
-			},
-			"B": {
-				NonTerminal: "B",
-				Rights: []models.ProductionBody{
-					{
-						Body: []models.SymbolsBtw{
-							{
-								"c",
-							},
-							{
-								"c",
-							},
-						},
-					},
-				},
-			},
+func Test_deleteChainRules(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{
+			name:  "from itmo",
+			input: "S -> B | dd\nB -> cc",
+			want:  "S -> cc | dd\nB -> cc",
+		},
+		{
+			name:  "my 1",
+			input: "S -> B | E | D\nB -> cc\nE -> e\nD -> ddd",
+			want:  "S -> cc | e | ddd\nB -> cc\nE -> e\nD -> ddd",
 		},
 	}
 
-	args := &grammar.Grammar{
-		Start: "A",
-		Grammar: map[string]models.Rule{
-			"A": {
-				NonTerminal: "A",
-				Rights: []models.ProductionBody{
-					{
-						Body: []models.SymbolsBtw{
-							{
-								"B",
-							},
-						},
-					},
-					{
-						Body: []models.SymbolsBtw{
-							{
-								"d",
-							},
-							{
-								"d",
-							},
-						},
-					},
-				},
-			},
-			"B": {
-				NonTerminal: "B",
-				Rights: []models.ProductionBody{
-					{
-						Body: []models.SymbolsBtw{
-							{
-								"c",
-							},
-							{
-								"c",
-							},
-						},
-					},
-				},
-			},
-		},
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			expected := parser.New().Parse(tt.want)
+			input := parser.New().Parse(tt.input)
+
+			result := deleteChainRules(input)
+
+			require.Equal(t, expected, result)
+		})
 	}
-
-	result := deleteChainRules(args)
-
-	require.Equal(t, expected, result, "")
 }
-
-//`
-//S -> Bb | Ee
-//E -> Ee`
 
 func Test_deleteNonGenerative(t *testing.T) {
 	tests := []struct {
