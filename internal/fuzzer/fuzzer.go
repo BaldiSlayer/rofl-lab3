@@ -39,24 +39,6 @@ func New(p Parser, cnf CNFer, b *bigramms.Bigramms) *Fuzzer {
 	}
 }
 
-// lowercaseLetters := "abcdefghijklmnopqrstuvwxyz"
-
-func randomKey(m map[string]map[string]struct{}) string {
-	if len(m) == 0 {
-		return ""
-	}
-
-	keys := make([]string, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
-	}
-
-	rand.Seed(time.Now().UnixNano())
-	randomIndex := rand.Intn(len(keys))
-
-	return keys[randomIndex]
-}
-
 func randomFloat() float64 {
 	rand.Seed(time.Now().UnixNano())
 
@@ -81,8 +63,8 @@ func randomKeyFromMap(m map[string]struct{}) string {
 	return randomItem(a)
 }
 
-func (f *Fuzzer) genString(terminals []string, someValue float64) string {
-	res := randomKey(f.bigramm.First)
+func (f *Fuzzer) genString(terminals []string, someValue float64, startSmb string) string {
+	res := randomKeyFromMap(f.bigramm.First[""])
 	lastSmb := res
 
 	for true {
@@ -107,6 +89,7 @@ func (f *Fuzzer) genString(terminals []string, someValue float64) string {
 			break
 		}
 
+		// add from bigrams
 		lastSmb = randomKeyFromMap(f.bigramm.Matrix[string(res[len(res)-1])])
 		res += lastSmb
 	}
@@ -114,17 +97,18 @@ func (f *Fuzzer) genString(terminals []string, someValue float64) string {
 	return res
 }
 
-func (f *Fuzzer) Generate(n int, startSmb string) []string {
+func (f *Fuzzer) Generate(n int, someValue float64, startSmb string) []string {
 	output := make([]string, 0, n)
 
 	terminals := f.g.ExtractTerminals()
 
 	for i := 0; i < n; i++ {
-		gennedStr := f.genString(terminals, 0.1)
+		gennedStr := f.genString(terminals, someValue, startSmb)
 
-		belongs := f.cyk.Check(gennedStr)
-
-		output = append(output, fmt.Sprintf("%s %t", gennedStr, belongs))
+		output = append(
+			output,
+			fmt.Sprintf("%s %t", gennedStr, f.cyk.Check(gennedStr)),
+		)
 	}
 
 	return output

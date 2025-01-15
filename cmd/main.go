@@ -17,7 +17,7 @@ func main() {
 		&bigramms.Bigramms{},
 	)
 
-	results := fuzz.Generate(100, "S")
+	results := fuzz.Generate(100, 0.1, "S")
 	for _, line := range results {
 		fmt.Println(line)
 	}
