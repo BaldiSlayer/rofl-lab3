@@ -1,6 +1,7 @@
 package cnf
 
 import (
+	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 	"github.com/BaldiSlayer/rofl-lab3/internal/parser"
 	"testing"
 
@@ -230,6 +231,228 @@ func Test_deleteNonReachable(t *testing.T) {
 			result := deleteNonReachable(input)
 
 			require.Equal(t, expected, result)
+		})
+	}
+}
+
+func Test_deletePairedTerminals(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  *grammar.Grammar
+	}{
+		{
+			name:  "my",
+			input: "S -> aa",
+			want: &grammar.Grammar{
+				Start: "S",
+				Grammar: map[string]models.Rule{
+					"S": {
+						NonTerminal: "S",
+						Rights: []models.ProductionBody{
+							{
+								"NT_PT_0",
+								"NT_PT_0",
+							},
+						},
+					},
+					"NT_PT_0": {
+						NonTerminal: "NT_PT_0",
+						Rights: []models.ProductionBody{
+							{
+								"a",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:  "my",
+			input: "S -> aa | bb | dC\nC -> cc",
+			want: &grammar.Grammar{
+				Start: "S",
+				Grammar: map[string]models.Rule{
+					"S": {
+						NonTerminal: "S",
+						Rights: []models.ProductionBody{
+							{
+								"NT_PT_0",
+								"NT_PT_0",
+							},
+							{
+								"NT_PT_1",
+								"NT_PT_1",
+							},
+							{
+								"d",
+								"C",
+							},
+						},
+					},
+					"NT_PT_0": {
+						NonTerminal: "NT_PT_0",
+						Rights: []models.ProductionBody{
+							{
+								"a",
+							},
+						},
+					},
+					"NT_PT_1": {
+						NonTerminal: "NT_PT_1",
+						Rights: []models.ProductionBody{
+							{
+								"b",
+							},
+						},
+					},
+					"C": {
+						NonTerminal: "C",
+						Rights: []models.ProductionBody{
+							{
+								"NT_PT_2",
+								"NT_PT_2",
+							},
+						},
+					},
+					"NT_PT_2": {
+						NonTerminal: "NT_PT_2",
+						Rights: []models.ProductionBody{
+							{
+								"c",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:  "my",
+			input: "S -> a",
+			want: &grammar.Grammar{
+				Start: "S",
+				Grammar: map[string]models.Rule{
+					"S": {
+						NonTerminal: "S",
+						Rights: []models.ProductionBody{
+							{
+								"a",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:  "my",
+			input: "S -> ab",
+			want: &grammar.Grammar{
+				Start: "S",
+				Grammar: map[string]models.Rule{
+					"S": {
+						NonTerminal: "S",
+						Rights: []models.ProductionBody{
+							{
+								"NT_PT_0",
+								"NT_PT_1",
+							},
+						},
+					},
+					"NT_PT_0": {
+						NonTerminal: "NT_PT_0",
+						Rights: []models.ProductionBody{
+							{
+								"a",
+							},
+						},
+					},
+					"NT_PT_1": {
+						NonTerminal: "NT_PT_1",
+						Rights: []models.ProductionBody{
+							{
+								"b",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:  "my",
+			input: "S -> ab | cc | cD\nD -> aa",
+			want: &grammar.Grammar{
+				Start: "S",
+				Grammar: map[string]models.Rule{
+					"S": {
+						NonTerminal: "S",
+						Rights: []models.ProductionBody{
+							{
+								"NT_PT_0",
+								"NT_PT_1",
+							},
+							{
+								"NT_PT_2",
+								"NT_PT_2",
+							},
+							{
+								"c",
+								"D",
+							},
+						},
+					},
+					"NT_PT_0": {
+						NonTerminal: "NT_PT_0",
+						Rights: []models.ProductionBody{
+							{
+								"a",
+							},
+						},
+					},
+					"NT_PT_1": {
+						NonTerminal: "NT_PT_1",
+						Rights: []models.ProductionBody{
+							{
+								"b",
+							},
+						},
+					},
+					"NT_PT_2": {
+						NonTerminal: "NT_PT_2",
+						Rights: []models.ProductionBody{
+							{
+								"c",
+							},
+						},
+					},
+					"D": {
+						NonTerminal: "D",
+						Rights: []models.ProductionBody{
+							{
+								"NT_PT_3",
+								"NT_PT_3",
+							},
+						},
+					},
+					"NT_PT_3": {
+						NonTerminal: "NT_PT_3",
+						Rights: []models.ProductionBody{
+							{
+								"a",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			input := parser.New().Parse(tt.input)
+
+			result := deletePairedTerminals(input)
+
+			require.Equal(t, tt.want, result)
 		})
 	}
 }
