@@ -349,7 +349,7 @@ func deletePairedTerminals(g *grammar.Grammar) *grammar.Grammar {
 
 	genNTName := func() string {
 		i++
-		return fmt.Sprintf("NT_PT_%d", i)
+		return fmt.Sprintf("[NT_PT_%d]", i)
 	}
 
 	replacements := make([]models.Rule, 0)

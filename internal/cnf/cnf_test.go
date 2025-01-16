@@ -251,13 +251,13 @@ func Test_deletePairedTerminals(t *testing.T) {
 						NonTerminal: "S",
 						Rights: []models.ProductionBody{
 							{
-								"NT_PT_0",
-								"NT_PT_0",
+								"[NT_PT_0]",
+								"[NT_PT_0]",
 							},
 						},
 					},
-					"NT_PT_0": {
-						NonTerminal: "NT_PT_0",
+					"[NT_PT_0]": {
+						NonTerminal: "[NT_PT_0]",
 						Rights: []models.ProductionBody{
 							{
 								"a",
@@ -277,37 +277,37 @@ func Test_deletePairedTerminals(t *testing.T) {
 						NonTerminal: "S",
 						Rights: []models.ProductionBody{
 							{
-								"NT_PT_0",
-								"NT_PT_0",
+								"[NT_PT_0]",
+								"[NT_PT_0]",
 							},
 							{
-								"NT_PT_1",
-								"NT_PT_1",
+								"[NT_PT_1]",
+								"[NT_PT_1]",
 							},
 							{
-								"NT_PT_2",
+								"[NT_PT_2]",
 								"C",
 							},
 						},
 					},
-					"NT_PT_0": {
-						NonTerminal: "NT_PT_0",
+					"[NT_PT_0]": {
+						NonTerminal: "[NT_PT_0]",
 						Rights: []models.ProductionBody{
 							{
 								"a",
 							},
 						},
 					},
-					"NT_PT_1": {
-						NonTerminal: "NT_PT_1",
+					"[NT_PT_1]": {
+						NonTerminal: "[NT_PT_1]",
 						Rights: []models.ProductionBody{
 							{
 								"b",
 							},
 						},
 					},
-					"NT_PT_2": {
-						NonTerminal: "NT_PT_2",
+					"[NT_PT_2]": {
+						NonTerminal: "[NT_PT_2]",
 						Rights: []models.ProductionBody{
 							{
 								"d",
@@ -318,13 +318,13 @@ func Test_deletePairedTerminals(t *testing.T) {
 						NonTerminal: "C",
 						Rights: []models.ProductionBody{
 							{
-								"NT_PT_3",
-								"NT_PT_3",
+								"[NT_PT_3]",
+								"[NT_PT_3]",
 							},
 						},
 					},
-					"NT_PT_3": {
-						NonTerminal: "NT_PT_3",
+					"[NT_PT_3]": {
+						NonTerminal: "[NT_PT_3]",
 						Rights: []models.ProductionBody{
 							{
 								"c",
@@ -361,21 +361,21 @@ func Test_deletePairedTerminals(t *testing.T) {
 						NonTerminal: "S",
 						Rights: []models.ProductionBody{
 							{
-								"NT_PT_0",
-								"NT_PT_1",
+								"[NT_PT_0]",
+								"[NT_PT_1]",
 							},
 						},
 					},
-					"NT_PT_0": {
-						NonTerminal: "NT_PT_0",
+					"[NT_PT_0]": {
+						NonTerminal: "[NT_PT_0]",
 						Rights: []models.ProductionBody{
 							{
 								"a",
 							},
 						},
 					},
-					"NT_PT_1": {
-						NonTerminal: "NT_PT_1",
+					"[NT_PT_1]": {
+						NonTerminal: "[NT_PT_1]",
 						Rights: []models.ProductionBody{
 							{
 								"b",
@@ -395,45 +395,45 @@ func Test_deletePairedTerminals(t *testing.T) {
 						NonTerminal: "S",
 						Rights: []models.ProductionBody{
 							{
-								"NT_PT_0",
-								"NT_PT_1",
+								"[NT_PT_0]",
+								"[NT_PT_1]",
 							},
 							{
-								"NT_PT_2",
-								"NT_PT_2",
+								"[NT_PT_2]",
+								"[NT_PT_2]",
 							},
 							{
-								"NT_PT_3",
+								"[NT_PT_3]",
 								"D",
 							},
 						},
 					},
-					"NT_PT_0": {
-						NonTerminal: "NT_PT_0",
+					"[NT_PT_0]": {
+						NonTerminal: "[NT_PT_0]",
 						Rights: []models.ProductionBody{
 							{
 								"a",
 							},
 						},
 					},
-					"NT_PT_1": {
-						NonTerminal: "NT_PT_1",
+					"[NT_PT_1]": {
+						NonTerminal: "[NT_PT_1]",
 						Rights: []models.ProductionBody{
 							{
 								"b",
 							},
 						},
 					},
-					"NT_PT_2": {
-						NonTerminal: "NT_PT_2",
+					"[NT_PT_2]": {
+						NonTerminal: "[NT_PT_2]",
 						Rights: []models.ProductionBody{
 							{
 								"c",
 							},
 						},
 					},
-					"NT_PT_3": {
-						NonTerminal: "NT_PT_3",
+					"[NT_PT_3]": {
+						NonTerminal: "[NT_PT_3]",
 						Rights: []models.ProductionBody{
 							{
 								"c",
@@ -444,13 +444,13 @@ func Test_deletePairedTerminals(t *testing.T) {
 						NonTerminal: "D",
 						Rights: []models.ProductionBody{
 							{
-								"NT_PT_4",
-								"NT_PT_4",
+								"[NT_PT_4]",
+								"[NT_PT_4]",
 							},
 						},
 					},
-					"NT_PT_4": {
-						NonTerminal: "NT_PT_4",
+					"[NT_PT_4]": {
+						NonTerminal: "[NT_PT_4]",
 						Rights: []models.ProductionBody{
 							{
 								"a",
@@ -489,19 +489,19 @@ func TestCNF_ToCNF(t *testing.T) {
 						NonTerminal: "S",
 						Rights: []models.ProductionBody{
 							{
-								"NT_PT_0",
+								"[NT_PT_0]",
 								"A",
 							},
 							{
-								"NT_PT_1",
+								"[NT_PT_1]",
 								"A",
 							},
 							{
-								"NT_PT_2",
+								"[NT_PT_2]",
 								"B",
 							},
 							{
-								"NT_PT_3",
+								"[NT_PT_3]",
 								"B",
 							},
 						},
@@ -522,32 +522,32 @@ func TestCNF_ToCNF(t *testing.T) {
 							},
 						},
 					},
-					"NT_PT_0": {
-						NonTerminal: "NT_PT_0",
+					"[NT_PT_0]": {
+						NonTerminal: "[NT_PT_0]",
 						Rights: []models.ProductionBody{
 							{
 								"c",
 							},
 						},
 					},
-					"NT_PT_1": {
-						NonTerminal: "NT_PT_1",
+					"[NT_PT_1]": {
+						NonTerminal: "[NT_PT_1]",
 						Rights: []models.ProductionBody{
 							{
 								"d",
 							},
 						},
 					},
-					"NT_PT_2": {
-						NonTerminal: "NT_PT_2",
+					"[NT_PT_2]": {
+						NonTerminal: "[NT_PT_2]",
 						Rights: []models.ProductionBody{
 							{
 								"c",
 							},
 						},
 					},
-					"NT_PT_3": {
-						NonTerminal: "NT_PT_3",
+					"[NT_PT_3]": {
+						NonTerminal: "[NT_PT_3]",
 						Rights: []models.ProductionBody{
 							{
 								"e",
