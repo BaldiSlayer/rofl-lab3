@@ -13,7 +13,7 @@
 
 ```bash
 go build ./cmd/main.go
-./main < input_file_name > output_file_name
+./main --tests_count 10 --start_symbol S --break_prob 0.1 --terminal_adding_prob 0.2 < test
 ```
 
 ### Использованные материалы
