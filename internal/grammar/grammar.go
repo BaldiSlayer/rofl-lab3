@@ -70,7 +70,7 @@ func (g *Grammar) GetProductionsSlice() []models.Rule {
 	return rules
 }
 
-func (g *Grammar) Print() string {
+func (g *Grammar) String() string {
 	var sb strings.Builder
 
 	for _, rule := range g.Grammar {

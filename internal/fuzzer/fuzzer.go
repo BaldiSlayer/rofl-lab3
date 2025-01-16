@@ -18,10 +18,15 @@ type CNFer interface {
 	ToCNF(g *grammar.Grammar) *grammar.Grammar
 }
 
+type InCFG interface {
+	Check(word string) bool
+}
+
 type Fuzzer struct {
 	bigramm *bigramms.Bigramms
-	cyk     *cyk.CYK
 	g       *grammar.Grammar
+
+	cyk InCFG
 }
 
 func New(s string, p Parser, cnf CNFer, b *bigramms.Bigramms, startSymbol string) *Fuzzer {
@@ -98,7 +103,7 @@ func (f *Fuzzer) genString(terminals []string, someValue float64, startSmb strin
 }
 
 func (f *Fuzzer) Generate(n int, someValue float64, startSmb string) []string {
-	fmt.Println(f.g.Print())
+	//fmt.Println(f.g.Print())
 
 	output := make([]string, 0, n)
 
