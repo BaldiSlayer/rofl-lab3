@@ -119,7 +119,6 @@ func New(rules []Rule, startSymbol string) *Grammar {
 		}
 	}
 
-	// todo убрать хардкод стартового, вынести это в параметры
 	return &Grammar{
 		Grammar: g,
 		Start:   startSymbol,
