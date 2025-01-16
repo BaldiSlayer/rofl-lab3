@@ -1,8 +1,9 @@
 package bigramms
 
 import (
-	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 	"testing"
+
+	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 
 	"github.com/stretchr/testify/assert"
 )

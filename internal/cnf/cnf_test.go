@@ -1,8 +1,10 @@
 package cnf
 
 import (
-	"github.com/BaldiSlayer/rofl-lab3/internal/parser"
 	"testing"
+
+	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
+	"github.com/BaldiSlayer/rofl-lab3/internal/parser"
 
 	"github.com/stretchr/testify/require"
 )

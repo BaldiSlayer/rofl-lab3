@@ -2,6 +2,7 @@ package cnf
 
 import (
 	"fmt"
+
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 	"github.com/BaldiSlayer/rofl-lab3/pkg/queue"
 )

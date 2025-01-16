@@ -3,6 +3,8 @@ package parser
 import (
 	"testing"
 
+	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
+
 	"github.com/stretchr/testify/require"
 )
 
