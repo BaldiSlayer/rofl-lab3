@@ -103,98 +103,25 @@ func makeLast(g *grammar.Grammar) map[string]map[string]struct{} {
 	return makeFirst(g.Reverse())
 }
 
-func checkFollow(
-	g *grammar.Grammar,
-	follow map[string]map[string]struct{},
-	first map[string]map[string]struct{},
-) (map[string]map[string]struct{}, bool) {
-	changed := false
-
-	isChanged := func(rightRule grammar.ProductionBody) bool {
-		for terminal := range first[rightRule[1]] {
-			if _, ok := follow[rightRule[0]][terminal]; !ok {
-				return true
-			}
-		}
-
-		return false
-	}
-
-	for _, rightRules := range g.Grammar {
-		for _, rightRule := range rightRules.Rights {
-			if len(rightRule) > 1 {
-				changed = isChanged(rightRule)
-
-				follow[rightRule[0]] = union(
-					follow[rightRule[0]],
-					first[rightRule[1]],
-				)
-			}
-		}
-	}
-
-	return follow, changed
-}
-
 func makeFollow(g *grammar.Grammar, first map[string]map[string]struct{}) map[string]map[string]struct{} {
 	follow := make(map[string]map[string]struct{})
 
-	var changed bool
-
-	for {
-		follow, changed = checkFollow(g, follow, first)
-
-		if !changed {
-			return follow
-		}
+	follow[g.Start] = map[string]struct{}{
+		"$": {},
 	}
+
+	changed := true
+
+	for changed {
+		changed = false
+
+	}
+
+	return follow
 }
 
-func checkPrecede(
-	g *grammar.Grammar,
-	precede map[string]map[string]struct{},
-	last map[string]map[string]struct{},
-) (map[string]map[string]struct{}, bool) {
-	changed := false
-
-	isChanged := func(rightRule grammar.ProductionBody) bool {
-		for terminal := range last[rightRule[0]] {
-			if _, ok := precede[rightRule[1]][terminal]; !ok {
-				return true
-			}
-		}
-
-		return false
-	}
-
-	for _, rightRules := range g.Grammar {
-		for _, rightRule := range rightRules.Rights {
-			if len(rightRule) > 1 {
-				changed = isChanged(rightRule)
-
-				precede[rightRule[1]] = union(
-					precede[rightRule[1]],
-					last[rightRule[0]],
-				)
-			}
-		}
-	}
-
-	return precede, changed
-}
-
-func makePrecede(g *grammar.Grammar, first map[string]map[string]struct{}) map[string]map[string]struct{} {
-	precede := make(map[string]map[string]struct{})
-
-	var changed bool
-
-	for {
-		precede, changed = checkPrecede(g, precede, first)
-
-		if !changed {
-			return precede
-		}
-	}
+func makePrecede(g *grammar.Grammar, last map[string]map[string]struct{}) map[string]map[string]struct{} {
+	return makeFollow(g.Reverse(), last)
 }
 
 // very bad function
@@ -278,14 +205,14 @@ func makeBigramMatrix(
 
 func (b *Bigramms) Build(g *grammar.Grammar) *Bigramms {
 	first := makeFirst(g)
-	// last := makeLast(g)
-	//follow := makeFollow(g, first)
-	//precede := makePrecede(g, last)
+	last := makeLast(g)
+	follow := makeFollow(g, first)
+	precede := makePrecede(g, last)
 
-	//matrix := makeBigramMatrix(g, first, last, follow, precede)
+	matrix := makeBigramMatrix(g, first, last, follow, precede)
 
 	return &Bigramms{
-		//Matrix: matrix,
-		First: first,
+		Matrix: matrix,
+		First:  first,
 	}
 }
