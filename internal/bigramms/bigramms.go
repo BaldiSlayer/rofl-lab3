@@ -99,6 +99,10 @@ func makeFirst(g *grammar.Grammar) map[string]map[string]struct{} {
 	return first
 }
 
+func makeLast(g *grammar.Grammar) map[string]map[string]struct{} {
+	return makeFirst(g.Reverse())
+}
+
 func checkFollow(
 	g *grammar.Grammar,
 	follow map[string]map[string]struct{},
@@ -274,6 +278,7 @@ func makeBigramMatrix(
 
 func (b *Bigramms) Build(g *grammar.Grammar) *Bigramms {
 	first := makeFirst(g)
+	// last := makeLast(g)
 	//follow := makeFollow(g, first)
 	//precede := makePrecede(g, last)
 

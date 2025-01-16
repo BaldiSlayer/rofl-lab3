@@ -125,3 +125,69 @@ func Test_makeFirst(t *testing.T) {
 		})
 	}
 }
+
+func Test_makeLast(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  map[string]map[string]struct{}
+	}{
+		{
+			name:  "1",
+			input: "S -> AB\nA -> a\nB -> b",
+			want: map[string]map[string]struct{}{
+				"A": {
+					"a": {},
+				},
+				"B": {
+					"b": {},
+				},
+				"S": {
+					"b": {},
+				},
+			},
+		},
+		{
+			name:  "2",
+			input: "S -> a | b\nA -> a\nB -> b",
+			want: map[string]map[string]struct{}{
+				"S": {
+					"a": {},
+					"b": {},
+				},
+				"A": {
+					"a": {},
+				},
+				"B": {
+					"b": {},
+				},
+			},
+		},
+		{
+			name:  "3",
+			input: "S -> B | A\nA -> ab\nB -> bc",
+			want: map[string]map[string]struct{}{
+				"S": {
+					"c": {},
+					"b": {},
+				},
+				"A": {
+					"b": {},
+				},
+				"B": {
+					"c": {},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			input := parser.New().Parse(tt.input, "S")
+
+			result := makeLast(input)
+
+			require.Equal(t, tt.want, result)
+		})
+	}
+}

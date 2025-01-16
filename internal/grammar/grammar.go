@@ -76,6 +76,37 @@ func (g *Grammar) GetRulesSlice() []Rule {
 	return rules
 }
 
+func reverseStringSlice(slice []string) []string {
+	reversed := make([]string, len(slice))
+
+	for i, s := range slice {
+		reversed[len(slice)-1-i] = s
+	}
+
+	return reversed
+}
+
+func (g *Grammar) Reverse() *Grammar {
+	var gram Grammar
+
+	gram.Grammar = make(map[string]Rule)
+
+	for nt, rules := range g.Grammar {
+		rights := make([]ProductionBody, 0)
+
+		for _, rule := range rules.Rights {
+			rights = append(rights, reverseStringSlice(rule))
+		}
+
+		gram.Grammar[nt] = Rule{
+			NonTerminal: nt,
+			Rights:      rights,
+		}
+	}
+
+	return &gram
+}
+
 func (g *Grammar) String() string {
 	var sb strings.Builder
 
