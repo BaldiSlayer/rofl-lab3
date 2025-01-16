@@ -10,13 +10,11 @@ import (
 type CNF struct{}
 
 func mergeGrammars(parent *grammar.Grammar, child *grammar.Grammar) *grammar.Grammar {
-	newGrammar := *parent
-
 	for _, rule := range child.Grammar {
-		newGrammar.Grammar[rule.NonTerminal] = rule
+		parent.Grammar[rule.NonTerminal] = rule
 	}
 
-	return &newGrammar
+	return parent
 }
 
 func newIDGetter() func() int {

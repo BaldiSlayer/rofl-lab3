@@ -2,23 +2,53 @@ package fuzzer
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
-
 	"github.com/BaldiSlayer/rofl-lab3/internal/bigramms"
 	"github.com/BaldiSlayer/rofl-lab3/internal/cyk"
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
+	"math/rand"
+	"time"
 )
 
+func randomFloat() float64 {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	return r.Float64()
+}
+
+func randomItem(items []string) string {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	randomIndex := r.Intn(len(items))
+
+	return items[randomIndex]
+}
+
+func randomKeyFromMap(m map[string]struct{}) string {
+	if len(m) == 0 {
+		return ""
+	}
+
+	a := make([]string, 0, len(m))
+
+	for item := range m {
+		a = append(a, item)
+	}
+
+	return randomItem(a)
+}
+
 type Parser interface {
+	// Parse parses CFG from string s to grammar with specified startSymbol
 	Parse(s string, startSymbol string) *grammar.Grammar
 }
 
 type CNFer interface {
+	// ToCNF translates grammar to Chomsky Normal Form
 	ToCNF(g *grammar.Grammar) *grammar.Grammar
 }
 
 type InCFG interface {
+	// Check checks is word can be produced by CFG
 	Check(word string) bool
 }
 
@@ -41,47 +71,19 @@ func New(s string, p Parser, cnf CNFer, b *bigramms.Bigramms, startSymbol string
 	}
 }
 
-func randomFloat() float64 {
-	rand.Seed(time.Now().UnixNano())
-
-	return rand.Float64()
-}
-
-func randomItem(items []string) string {
-	rand.Seed(time.Now().UnixNano())
-
-	randomIndex := rand.Intn(len(items))
-
-	return items[randomIndex]
-}
-
-func randomKeyFromMap(m map[string]struct{}) string {
-	if len(m) == 0 {
-		return ""
-	}
-
-	a := make([]string, 0, len(m))
-
-	for item := range m {
-		a = append(a, item)
-	}
-
-	return randomItem(a)
-}
-
-func (f *Fuzzer) genString(terminals []string, someValue float64, startSmb string) string {
-	res := randomKeyFromMap(f.bigramm.First[startSmb])
+func (f *Fuzzer) genString(terminals []string, breakProb float64, terminalAddingProb float64) string {
+	res := randomKeyFromMap(f.bigramm.First[f.g.Start])
 	lastSmb := res
 
 	for true {
 		randVal := randomFloat()
 
-		if randomFloat() < 0.1 {
+		if randomFloat() < breakProb {
 			break
 		}
 
 		// add terminal
-		if randVal < someValue {
+		if randVal < terminalAddingProb {
 			lastSmb = randomItem(terminals)
 			res += lastSmb
 
@@ -103,27 +105,24 @@ func (f *Fuzzer) genString(terminals []string, someValue float64, startSmb strin
 	return res
 }
 
-// cringe
-func boolToInt(b bool) int {
-	if b {
-		return 1
+func (f *Fuzzer) Generate(n int, breakProb, terminalAddingProb float64) []string {
+	output := make([]string, n)
+
+	// cringe
+	boolToInt := func(b bool) int {
+		if b {
+			return 1
+		}
+
+		return 0
 	}
-
-	return 0
-}
-
-func (f *Fuzzer) Generate(n int, someValue float64, startSmb string) []string {
-	output := make([]string, 0, n)
 
 	terminals := f.g.ExtractTerminals()
 
 	for i := 0; i < n; i++ {
-		gennedStr := f.genString(terminals, someValue, startSmb)
+		gennedStr := f.genString(terminals, breakProb, terminalAddingProb)
 
-		output = append(
-			output,
-			fmt.Sprintf("%s %d", gennedStr, boolToInt(f.cyk.Check(gennedStr))),
-		)
+		output[i] = fmt.Sprintf("%s %d", gennedStr, boolToInt(f.cyk.Check(gennedStr)))
 	}
 
 	return output

@@ -16,27 +16,8 @@ type Grammar struct {
 	Grammar map[string]Rule
 }
 
-func IsTerminal(symbols string) bool {
-	return symbols[0] >= 'a' && symbols[0] <= 'z'
-}
-
-func IsNotTerminal(symbols string) bool {
-	return !IsTerminal(symbols)
-}
-
-func extractTerminalsFromRule(rule ProductionBody) []string {
-	terminals := make([]string, 0)
-
-	for _, smb := range rule {
-		if IsTerminal(smb) {
-			terminals = append(terminals, smb)
-		}
-	}
-
-	return terminals
-}
-
-func uniqify(input []string) []string {
+// unifySlice returns slice without repetitions
+func unifySlice(input []string) []string {
 	uniqueMap := make(map[string]struct{}, len(input))
 	uniqueSlice := make([]string, 0, len(input))
 
@@ -50,16 +31,48 @@ func uniqify(input []string) []string {
 	return uniqueSlice
 }
 
+func reverseStringSlice(slice []string) []string {
+	reversed := make([]string, len(slice))
+
+	for i, s := range slice {
+		reversed[len(slice)-1-i] = s
+	}
+
+	return reversed
+}
+
+func IsTerminal(symbols string) bool {
+	return symbols[0] >= 'a' && symbols[0] <= 'z'
+}
+
+func IsNotTerminal(symbols string) bool {
+	return !IsTerminal(symbols)
+}
+
+// extractTerminalsFromPB extracts terminals from production body
+func extractTerminalsFromPB(pb ProductionBody) []string {
+	terminals := make([]string, 0)
+
+	for _, smb := range pb {
+		if IsTerminal(smb) {
+			terminals = append(terminals, smb)
+		}
+	}
+
+	return terminals
+}
+
+// ExtractTerminals extracts grammar terminals
 func (g *Grammar) ExtractTerminals() []string {
 	terminals := make([]string, 0, len(g.Grammar))
 
 	for _, rules := range g.Grammar {
 		for _, rule := range rules.Rights {
-			terminals = append(terminals, extractTerminalsFromRule(rule)...)
+			terminals = append(terminals, extractTerminalsFromPB(rule)...)
 		}
 	}
 
-	return uniqify(terminals)
+	return unifySlice(terminals)
 }
 
 // GetRulesSlice creates a slide with rules. Necessary for a constant order
@@ -80,16 +93,7 @@ func (g *Grammar) GetRulesSlice() []Rule {
 	return rules
 }
 
-func reverseStringSlice(slice []string) []string {
-	reversed := make([]string, len(slice))
-
-	for i, s := range slice {
-		reversed[len(slice)-1-i] = s
-	}
-
-	return reversed
-}
-
+// Reverse returns grammar with revered production bodies
 func (g *Grammar) Reverse() *Grammar {
 	var gram Grammar
 
@@ -111,6 +115,7 @@ func (g *Grammar) Reverse() *Grammar {
 	return &gram
 }
 
+// String translates grammar to string
 func (g *Grammar) String() string {
 	var sb strings.Builder
 
@@ -119,13 +124,13 @@ func (g *Grammar) String() string {
 		sb.WriteString(" -> ")
 
 		for i, pb := range rule.Rights {
-			smth := ""
+			pbStr := ""
 
 			for _, smb := range pb {
-				smth += smb
+				pbStr += smb
 			}
 
-			sb.WriteString(smth)
+			sb.WriteString(pbStr)
 
 			if i < len(rule.Rights)-1 {
 				sb.WriteString(" | ")
@@ -138,6 +143,7 @@ func (g *Grammar) String() string {
 	return sb.String()
 }
 
+// New creates grammar object from rules slice and startSymbol
 func New(rules []Rule, startSymbol string) *Grammar {
 	g := make(map[string]Rule, len(rules))
 

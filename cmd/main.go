@@ -15,7 +15,7 @@ import (
 const (
 	n = 10
 	// todo rename
-	someValue = 0.1
+	someValue = 0.2
 
 	startSmb = "S"
 )
@@ -45,26 +45,17 @@ func inputLines() string {
 }
 
 func main() {
-	//input := inputLines()
-
-	input := `
-S -> [SS1]   a S1 [S]
-S1 -> b
-S -> S1 S
-S -> a
-S -> S S S
-[SS1] -> S S1
-[S] -> S`
+	input := inputLines()
 
 	fuzz := fuzzer.New(
 		input,
 		parser.New(),
 		&cnf.CNF{},
 		&bigramms.Bigramms{},
-		"S",
+		startSmb,
 	)
 
-	results := fuzz.Generate(n, someValue, startSmb)
+	results := fuzz.Generate(n, 0.1, someValue)
 	for _, line := range results {
 		fmt.Println(line)
 	}
