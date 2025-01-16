@@ -10,14 +10,6 @@ type Bigramms struct {
 	First  map[string]map[string]struct{}
 }
 
-func isNotTerminal(symbols string) bool {
-	return !(symbols[0] >= 'a' && symbols[0] <= 'z')
-}
-
-func isTerminal(symbols string) bool {
-	return symbols[0] >= 'a' && symbols[0] <= 'z'
-}
-
 func union(dest map[string]struct{}, src map[string]struct{}) map[string]struct{} {
 	if dest == nil {
 		dest = make(map[string]struct{})
@@ -79,7 +71,7 @@ func makeFirst(g *grammar.Grammar) map[string]map[string]struct{} {
 
 		for _, pb := range rule.Rights {
 			for _, elem := range pb {
-				if isTerminal(elem) {
+				if grammar.IsTerminal(elem) {
 					first[elem] = make(map[string]struct{})
 					first[elem][elem] = struct{}{}
 				}
@@ -91,7 +83,7 @@ func makeFirst(g *grammar.Grammar) map[string]map[string]struct{} {
 
 	// remove terminals from first
 	for e := range first {
-		if isTerminal(e) {
+		if grammar.IsTerminal(e) {
 			delete(first, e)
 		}
 	}
@@ -154,7 +146,7 @@ func makePrecede(g *grammar.Grammar, last map[string]map[string]struct{}) map[st
 	return makeFollow(g.Reverse(), last)
 }
 
-// very bad function
+// very bad function, i don't like it
 func needToAdd(
 	y1, y2 string,
 	first, last, follow, precede map[string]map[string]struct{},

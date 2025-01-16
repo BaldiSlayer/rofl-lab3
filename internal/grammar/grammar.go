@@ -16,15 +16,19 @@ type Grammar struct {
 	Grammar map[string]Rule
 }
 
-func isTerminal(symbols string) bool {
+func IsTerminal(symbols string) bool {
 	return symbols[0] >= 'a' && symbols[0] <= 'z'
+}
+
+func IsNotTerminal(symbols string) bool {
+	return !IsTerminal(symbols)
 }
 
 func extractTerminalsFromRule(rule ProductionBody) []string {
 	terminals := make([]string, 0)
 
 	for _, smb := range rule {
-		if isTerminal(smb) {
+		if IsTerminal(smb) {
 			terminals = append(terminals, smb)
 		}
 	}

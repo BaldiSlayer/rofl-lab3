@@ -2,20 +2,12 @@ package cnf
 
 import (
 	"fmt"
-
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
+
 	"github.com/BaldiSlayer/rofl-lab3/pkg/queue"
 )
 
 type CNF struct{}
-
-func isNotTerminal(symbols string) bool {
-	return !(symbols[0] >= 'a' && symbols[0] <= 'z')
-}
-
-func isTerminal(symbols string) bool {
-	return symbols[0] >= 'a' && symbols[0] <= 'z'
-}
 
 func mergeGrammars(parent *grammar.Grammar, child *grammar.Grammar) *grammar.Grammar {
 	newGrammar := *parent
@@ -90,7 +82,7 @@ func getNonTerminalsOfProductionBody(pBody grammar.ProductionBody) map[string]st
 	nts := make(map[string]struct{}, 0)
 
 	for _, symbol := range pBody {
-		if isNotTerminal(symbol) {
+		if grammar.IsNotTerminal(symbol) {
 			nts[symbol] = struct{}{}
 		}
 	}
@@ -134,7 +126,7 @@ func deleteChainRulesIteratively(nt string, g *grammar.Grammar, visited map[stri
 	for _, pBody := range g.Grammar[nt].Rights {
 		// если тело продукции - цепное правило, то все его правила
 		// прикрепляем к нетерминалу nt
-		if len(pBody) == 1 && isNotTerminal(pBody[0]) {
+		if len(pBody) == 1 && grammar.IsNotTerminal(pBody[0]) {
 			ntPBs := make([]grammar.ProductionBody, 0)
 
 			if _, ok := newGrammar.Grammar[pBody[0]]; ok {
@@ -319,7 +311,7 @@ func replacePairedTerminals(
 	checkSmb := func(smb string) {
 		name := smb
 
-		if isTerminal(smb) {
+		if grammar.IsTerminal(smb) {
 			if len(rules) != 0 && pb[0] == pb[1] {
 				pBody = append(pBody, rules[0].NonTerminal)
 
@@ -390,7 +382,7 @@ func (cnf *CNF) ToCNF(g *grammar.Grammar) *grammar.Grammar {
 		deletePairedTerminals,
 	}
 
-	// TODO it looks bad, I don't like it, but writing 7 function calls and declaring
+	// TODO it looks bad, I don't like it, but writing 5 function calls and declaring
 	// variables for them was even more annoying for me.
 	for _, transformation := range transformations {
 		g = transformation(g)
