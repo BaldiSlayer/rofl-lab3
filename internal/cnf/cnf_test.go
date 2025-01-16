@@ -4,26 +4,25 @@ import (
 	"github.com/BaldiSlayer/rofl-lab3/internal/parser"
 	"testing"
 
-	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_deleteLongPart(t *testing.T) {
 	type args struct {
-		rule     models.Rule
+		rule     grammar.Rule
 		idGetter func() int
 	}
 	tests := []struct {
 		name string
 		args args
-		want []models.Rule
+		want []grammar.Rule
 	}{
 		{
 			name: "1",
 			args: args{
-				rule: models.Rule{
+				rule: grammar.Rule{
 					NonTerminal: "B",
-					Rights: []models.ProductionBody{
+					Rights: []grammar.ProductionBody{
 						{
 							"S",
 							"S",
@@ -33,10 +32,10 @@ func Test_deleteLongPart(t *testing.T) {
 				},
 				idGetter: newIDGetter(),
 			},
-			want: []models.Rule{
+			want: []grammar.Rule{
 				{
 					NonTerminal: "B",
-					Rights: []models.ProductionBody{
+					Rights: []grammar.ProductionBody{
 						{
 							"S",
 							"[new_NT_0]",
@@ -45,7 +44,7 @@ func Test_deleteLongPart(t *testing.T) {
 				},
 				{
 					NonTerminal: "[new_NT_0]",
-					Rights: []models.ProductionBody{
+					Rights: []grammar.ProductionBody{
 						{
 							"S",
 							"a",
@@ -57,9 +56,9 @@ func Test_deleteLongPart(t *testing.T) {
 		{
 			name: "2",
 			args: args{
-				rule: models.Rule{
+				rule: grammar.Rule{
 					NonTerminal: "B",
-					Rights: []models.ProductionBody{
+					Rights: []grammar.ProductionBody{
 						{
 							"S",
 							"S",
@@ -78,10 +77,10 @@ func Test_deleteLongPart(t *testing.T) {
 				},
 				idGetter: newIDGetter(),
 			},
-			want: []models.Rule{
+			want: []grammar.Rule{
 				{
 					NonTerminal: "B",
-					Rights: []models.ProductionBody{
+					Rights: []grammar.ProductionBody{
 						{
 							"S",
 							"[new_NT_0]",
@@ -90,7 +89,7 @@ func Test_deleteLongPart(t *testing.T) {
 				},
 				{
 					NonTerminal: "[new_NT_0]",
-					Rights: []models.ProductionBody{
+					Rights: []grammar.ProductionBody{
 						{
 							"S",
 							"a",
@@ -99,7 +98,7 @@ func Test_deleteLongPart(t *testing.T) {
 				},
 				{
 					NonTerminal: "B",
-					Rights: []models.ProductionBody{
+					Rights: []grammar.ProductionBody{
 						{
 							"S",
 							"[new_NT_1]",
@@ -108,7 +107,7 @@ func Test_deleteLongPart(t *testing.T) {
 				},
 				{
 					NonTerminal: "[new_NT_1]",
-					Rights: []models.ProductionBody{
+					Rights: []grammar.ProductionBody{
 						{
 							"b",
 							"[new_NT_2]",
@@ -117,7 +116,7 @@ func Test_deleteLongPart(t *testing.T) {
 				},
 				{
 					NonTerminal: "[new_NT_2]",
-					Rights: []models.ProductionBody{
+					Rights: []grammar.ProductionBody{
 						{
 							"S",
 							"S",
@@ -126,7 +125,7 @@ func Test_deleteLongPart(t *testing.T) {
 				},
 				{
 					NonTerminal: "B",
-					Rights: []models.ProductionBody{
+					Rights: []grammar.ProductionBody{
 						{
 							"a",
 						},

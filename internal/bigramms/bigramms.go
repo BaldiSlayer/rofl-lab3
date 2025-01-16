@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
-	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 )
 
 type Bigramms struct {
@@ -84,7 +83,7 @@ func checkFollow(
 ) (map[string]map[string]struct{}, bool) {
 	changed := false
 
-	isChanged := func(rightRule models.ProductionBody) bool {
+	isChanged := func(rightRule grammar.ProductionBody) bool {
 		for terminal := range first[rightRule[1]] {
 			if _, ok := follow[rightRule[0]][terminal]; !ok {
 				return true
@@ -131,7 +130,7 @@ func checkPrecede(
 ) (map[string]map[string]struct{}, bool) {
 	changed := false
 
-	isChanged := func(rightRule models.ProductionBody) bool {
+	isChanged := func(rightRule grammar.ProductionBody) bool {
 		for terminal := range last[rightRule[0]] {
 			if _, ok := precede[rightRule[1]][terminal]; !ok {
 				return true

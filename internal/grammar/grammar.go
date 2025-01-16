@@ -1,20 +1,26 @@
 package grammar
 
 import (
-	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 	"strings"
 )
 
+type ProductionBody []string
+
+type Rule struct {
+	NonTerminal string
+	Rights      []ProductionBody
+}
+
 type Grammar struct {
 	Start   string
-	Grammar map[string]models.Rule
+	Grammar map[string]Rule
 }
 
 func isTerminal(symbols string) bool {
 	return symbols[0] >= 'a' && symbols[0] <= 'z'
 }
 
-func extractTerminalsFromRule(rule models.ProductionBody) []string {
+func extractTerminalsFromRule(rule ProductionBody) []string {
 	terminals := make([]string, 0)
 
 	for _, smb := range rule {
@@ -53,14 +59,14 @@ func (g *Grammar) ExtractTerminals() []string {
 }
 
 // GetProductionsSlice creates a slide with rules. Necessary for a constant order
-func (g *Grammar) GetProductionsSlice() []models.Rule {
-	rules := make([]models.Rule, 0, len(g.Grammar))
+func (g *Grammar) GetProductionsSlice() []Rule {
+	rules := make([]Rule, 0, len(g.Grammar))
 
 	for _, pbs := range g.Grammar {
 		for _, rightRule := range pbs.Rights {
-			rules = append(rules, models.Rule{
+			rules = append(rules, Rule{
 				NonTerminal: pbs.NonTerminal,
-				Rights: []models.ProductionBody{
+				Rights: []ProductionBody{
 					rightRule,
 				},
 			})
@@ -97,8 +103,8 @@ func (g *Grammar) String() string {
 	return sb.String()
 }
 
-func New(rules []models.Rule, startSymbol string) *Grammar {
-	g := make(map[string]models.Rule, len(rules))
+func New(rules []Rule, startSymbol string) *Grammar {
+	g := make(map[string]Rule, len(rules))
 
 	for _, rule := range rules {
 		if _, ok := g[rule.NonTerminal]; !ok {
@@ -107,7 +113,7 @@ func New(rules []models.Rule, startSymbol string) *Grammar {
 			continue
 		}
 
-		g[rule.NonTerminal] = models.Rule{
+		g[rule.NonTerminal] = Rule{
 			NonTerminal: rule.NonTerminal,
 			Rights:      append(g[rule.NonTerminal].Rights, rule.Rights...),
 		}

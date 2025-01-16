@@ -2,25 +2,24 @@ package cyk
 
 import (
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
-	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 )
 
 type CYK struct {
 	g                *grammar.Grammar
-	terminalRules    []models.Rule
-	nonTerminalRules []models.Rule
+	terminalRules    []grammar.Rule
+	nonTerminalRules []grammar.Rule
 	startingTerm     string
 }
 
 func New(g *grammar.Grammar) *CYK {
-	terminalRules := make([]models.Rule, 0, len(g.Grammar))
-	nonTerminalRules := make([]models.Rule, 0, len(g.Grammar))
+	terminalRules := make([]grammar.Rule, 0, len(g.Grammar))
+	nonTerminalRules := make([]grammar.Rule, 0, len(g.Grammar))
 
 	for _, rightRules := range g.Grammar {
 		for _, rightRule := range rightRules.Rights {
-			rule := models.Rule{
+			rule := grammar.Rule{
 				NonTerminal: rightRules.NonTerminal,
-				Rights: []models.ProductionBody{
+				Rights: []grammar.ProductionBody{
 					rightRule,
 				},
 			}
@@ -43,11 +42,11 @@ func New(g *grammar.Grammar) *CYK {
 	}
 }
 
-func isOneTermRule(rule models.ProductionBody, c uint8) bool {
+func isOneTermRule(rule grammar.ProductionBody, c uint8) bool {
 	return len(rule) == 1 && string(c) == rule[0]
 }
 
-func calcDP(d map[string][][]bool, rightRules models.Rule, i, j int) bool {
+func calcDP(d map[string][][]bool, rightRules grammar.Rule, i, j int) bool {
 	for _, rightRule := range rightRules.Rights {
 		for k := i + 1; k < j; k++ {
 			if d[rightRule[0]][i][k] && d[rightRule[1]][k][j] {

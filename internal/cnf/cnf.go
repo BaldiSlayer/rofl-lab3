@@ -3,7 +3,6 @@ package cnf
 import (
 	"fmt"
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
-	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 	"github.com/BaldiSlayer/rofl-lab3/pkg/queue"
 )
 
@@ -37,14 +36,14 @@ func newIDGetter() func() int {
 	}
 }
 
-func deleteLongPart(rule models.Rule, idGetter func() int) []models.Rule {
-	rules := make([]models.Rule, 0)
+func deleteLongPart(rule grammar.Rule, idGetter func() int) []grammar.Rule {
+	rules := make([]grammar.Rule, 0)
 
 	for _, r := range rule.Rights {
 		if len(r) <= 2 {
-			rules = append(rules, models.Rule{
+			rules = append(rules, grammar.Rule{
 				NonTerminal: rule.NonTerminal,
-				Rights:      []models.ProductionBody{r},
+				Rights:      []grammar.ProductionBody{r},
 			})
 
 			continue
@@ -52,9 +51,9 @@ func deleteLongPart(rule models.Rule, idGetter func() int) []models.Rule {
 
 		newNT := fmt.Sprintf("[new_NT_%d]", idGetter())
 
-		shortRule := models.Rule{
+		shortRule := grammar.Rule{
 			NonTerminal: rule.NonTerminal,
-			Rights: []models.ProductionBody{
+			Rights: []grammar.ProductionBody{
 				{
 					r[0],
 					newNT,
@@ -62,9 +61,9 @@ func deleteLongPart(rule models.Rule, idGetter func() int) []models.Rule {
 			},
 		}
 
-		newRule := models.Rule{
+		newRule := grammar.Rule{
 			NonTerminal: newNT,
-			Rights:      []models.ProductionBody{r[1:]},
+			Rights:      []grammar.ProductionBody{r[1:]},
 		}
 
 		rules = append(rules, shortRule)
@@ -75,7 +74,7 @@ func deleteLongPart(rule models.Rule, idGetter func() int) []models.Rule {
 }
 
 func deleteLongRules(g *grammar.Grammar) *grammar.Grammar {
-	rules := make([]models.Rule, 0)
+	rules := make([]grammar.Rule, 0)
 
 	idGetter := newIDGetter()
 
@@ -86,7 +85,7 @@ func deleteLongRules(g *grammar.Grammar) *grammar.Grammar {
 	return grammar.New(rules, g.Start)
 }
 
-func getNonTerminalsOfProductionBody(pBody models.ProductionBody) map[string]struct{} {
+func getNonTerminalsOfProductionBody(pBody grammar.ProductionBody) map[string]struct{} {
 	nts := make(map[string]struct{}, 0)
 
 	for _, symbol := range pBody {
@@ -98,7 +97,7 @@ func getNonTerminalsOfProductionBody(pBody models.ProductionBody) map[string]str
 	return nts
 }
 
-func getNonTerminalsOfRule(rule models.Rule) map[string]struct{} {
+func getNonTerminalsOfRule(rule grammar.Rule) map[string]struct{} {
 	nts := make(map[string]struct{}, 2*len(rule.Rights))
 
 	for _, pBody := range rule.Rights {
@@ -113,7 +112,7 @@ func getNonTerminalsOfRule(rule models.Rule) map[string]struct{} {
 func deleteChainRulesIteratively(nt string, g *grammar.Grammar, visited map[string]struct{}) *grammar.Grammar {
 	newGrammar := &grammar.Grammar{
 		Start:   nt,
-		Grammar: make(map[string]models.Rule),
+		Grammar: make(map[string]grammar.Rule),
 	}
 
 	visited[nt] = struct{}{}
@@ -127,7 +126,7 @@ func deleteChainRulesIteratively(nt string, g *grammar.Grammar, visited map[stri
 		}
 	}
 
-	newRule := models.Rule{
+	newRule := grammar.Rule{
 		NonTerminal: nt,
 	}
 
@@ -135,7 +134,7 @@ func deleteChainRulesIteratively(nt string, g *grammar.Grammar, visited map[stri
 		// если тело продукции - цепное правило, то все его правила
 		// прикрепляем к нетерминалу nt
 		if len(pBody) == 1 && isNotTerminal(pBody[0]) {
-			ntPBs := make([]models.ProductionBody, 0)
+			ntPBs := make([]grammar.ProductionBody, 0)
 
 			if _, ok := newGrammar.Grammar[pBody[0]]; ok {
 				ntPBs = newGrammar.Grammar[pBody[0]].Rights
@@ -164,7 +163,7 @@ func deleteChainRules(g *grammar.Grammar) *grammar.Grammar {
 	return newGrammar
 }
 
-func pbContainsNT(body models.ProductionBody, nt string) bool {
+func pbContainsNT(body grammar.ProductionBody, nt string) bool {
 	for _, elem := range body {
 		if elem == nt {
 			return true
@@ -174,7 +173,7 @@ func pbContainsNT(body models.ProductionBody, nt string) bool {
 	return false
 }
 
-func ruleContainsNT(rule models.Rule, nt string) bool {
+func ruleContainsNT(rule grammar.Rule, nt string) bool {
 	for _, right := range rule.Rights {
 		if pbContainsNT(right, nt) {
 			return true
@@ -204,7 +203,7 @@ func deleteRulesWithNT(g *grammar.Grammar, nt string) *grammar.Grammar {
 					break
 				}
 
-				g.Grammar[ngnt] = models.Rule{
+				g.Grammar[ngnt] = grammar.Rule{
 					NonTerminal: g.Grammar[ngnt].NonTerminal,
 					Rights:      newRights,
 				}
@@ -310,11 +309,11 @@ func deleteNonReachable(g *grammar.Grammar) *grammar.Grammar {
 }
 
 func replacePairedTerminals(
-	pb models.ProductionBody,
+	pb grammar.ProductionBody,
 	genNT func(terminal string) string,
-) (models.ProductionBody, []models.Rule) {
-	rules := make([]models.Rule, 0)
-	pBody := make(models.ProductionBody, 0)
+) (grammar.ProductionBody, []grammar.Rule) {
+	rules := make([]grammar.Rule, 0)
+	pBody := make(grammar.ProductionBody, 0)
 
 	checkSmb := func(smb string) {
 		name := smb
@@ -328,9 +327,9 @@ func replacePairedTerminals(
 
 			name = genNT(smb)
 
-			rules = append(rules, models.Rule{
+			rules = append(rules, grammar.Rule{
 				NonTerminal: name,
-				Rights: []models.ProductionBody{
+				Rights: []grammar.ProductionBody{
 					{
 						smb,
 					},
@@ -356,10 +355,10 @@ func deletePairedTerminals(g *grammar.Grammar) *grammar.Grammar {
 		return fmt.Sprintf("[NT_PT_%s]", terminal)
 	}
 
-	replacements := make([]models.Rule, 0)
+	replacements := make([]grammar.Rule, 0)
 
 	for nt, rules := range g.Grammar {
-		newRights := make([]models.ProductionBody, 0, len(rules.Rights))
+		newRights := make([]grammar.ProductionBody, 0, len(rules.Rights))
 
 		for _, pb := range rules.Rights {
 			newPB, r := replacePairedTerminals(pb, genNTName)
@@ -368,7 +367,7 @@ func deletePairedTerminals(g *grammar.Grammar) *grammar.Grammar {
 			replacements = append(replacements, r...)
 		}
 
-		g.Grammar[nt] = models.Rule{
+		g.Grammar[nt] = grammar.Rule{
 			NonTerminal: nt,
 			Rights:      newRights,
 		}

@@ -5,7 +5,6 @@ import (
 	"unicode"
 
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
-	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 )
 
 type Parser struct {
@@ -53,7 +52,7 @@ func (p *Parser) parseCapitals(s string) string {
 	return string(s[0])
 }
 
-func (p *Parser) parseProductionBody(s string) models.ProductionBody {
+func (p *Parser) parseProductionBody(s string) grammar.ProductionBody {
 	body := make([]string, 0, len(s))
 
 	p.pos = 0
@@ -80,8 +79,8 @@ func (p *Parser) parseProductionBody(s string) models.ProductionBody {
 	return body
 }
 
-func (p *Parser) parseRight(s string) []models.ProductionBody {
-	pbs := make([]models.ProductionBody, 0)
+func (p *Parser) parseRight(s string) []grammar.ProductionBody {
+	pbs := make([]grammar.ProductionBody, 0)
 
 	for _, production := range strings.Split(s, "|") {
 		trimmed := strings.TrimFunc(production, unicode.IsSpace)
@@ -92,19 +91,19 @@ func (p *Parser) parseRight(s string) []models.ProductionBody {
 	return pbs
 }
 
-func (p *Parser) parseLine(s string) models.Rule {
+func (p *Parser) parseLine(s string) grammar.Rule {
 	s = removeSpacesAndStrip(s)
 
 	split := strings.Split(s, "->")
 
-	return models.Rule{
+	return grammar.Rule{
 		NonTerminal: split[0],
 		Rights:      p.parseRight(split[1]),
 	}
 }
 
-func (p *Parser) parseLines(lines []string) []models.Rule {
-	rules := make([]models.Rule, 0, len(lines))
+func (p *Parser) parseLines(lines []string) []grammar.Rule {
+	rules := make([]grammar.Rule, 0, len(lines))
 
 	for _, line := range lines {
 		if line == "" {

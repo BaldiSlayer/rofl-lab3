@@ -2,7 +2,6 @@ package bigramms
 
 import (
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
-	"github.com/BaldiSlayer/rofl-lab3/internal/models"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -63,10 +62,10 @@ func TestUnionWithIdenticalMaps(t *testing.T) {
 func TestBigramms_Build(t *testing.T) {
 	g := grammar.Grammar{
 		Start: "S",
-		Grammar: map[string]models.Rule{
+		Grammar: map[string]grammar.Rule{
 			"S": {
 				NonTerminal: "S",
-				Rights: []models.ProductionBody{
+				Rights: []grammar.ProductionBody{
 					{
 						"A",
 						"A",
@@ -75,7 +74,7 @@ func TestBigramms_Build(t *testing.T) {
 			},
 			"A": {
 				NonTerminal: "A",
-				Rights: []models.ProductionBody{
+				Rights: []grammar.ProductionBody{
 					{
 						"a",
 					},

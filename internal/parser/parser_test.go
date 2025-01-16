@@ -3,8 +3,6 @@ package parser
 import (
 	"testing"
 
-	"github.com/BaldiSlayer/rofl-lab3/internal/models"
-
 	"github.com/stretchr/testify/require"
 )
 
@@ -51,7 +49,7 @@ func Test_parseRight(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []models.ProductionBody
+		want []grammar.ProductionBody
 	}{
 		{
 
@@ -59,7 +57,7 @@ func Test_parseRight(t *testing.T) {
 			args: args{
 				s: "SSa|SbSS|a",
 			},
-			want: []models.ProductionBody{
+			want: []grammar.ProductionBody{
 				{
 					"S",
 					"S",
@@ -82,7 +80,7 @@ func Test_parseRight(t *testing.T) {
 			args: args{
 				s: "SSSSSSSS",
 			},
-			want: []models.ProductionBody{
+			want: []grammar.ProductionBody{
 				{
 					"S",
 					"S",
@@ -116,16 +114,16 @@ func TestParser_parseLine(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want models.Rule
+		want grammar.Rule
 	}{
 		{
 			name: "first",
 			args: args{
 				s: "S  -> SSa  |SbSS| a",
 			},
-			want: models.Rule{
+			want: grammar.Rule{
 				NonTerminal: "S",
-				Rights: []models.ProductionBody{
+				Rights: []grammar.ProductionBody{
 					{
 						"S",
 						"S",
@@ -148,9 +146,9 @@ func TestParser_parseLine(t *testing.T) {
 			args: args{
 				s: "S  ->    SSSSSSSS",
 			},
-			want: models.Rule{
+			want: grammar.Rule{
 				NonTerminal: "S",
-				Rights: []models.ProductionBody{
+				Rights: []grammar.ProductionBody{
 					{
 						"S",
 						"S",
@@ -169,9 +167,9 @@ func TestParser_parseLine(t *testing.T) {
 			args: args{
 				s: "S -> [order66]ab",
 			},
-			want: models.Rule{
+			want: grammar.Rule{
 				NonTerminal: "S",
-				Rights: []models.ProductionBody{
+				Rights: []grammar.ProductionBody{
 					{
 						"[order66]",
 						"a",

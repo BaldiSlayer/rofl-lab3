@@ -116,8 +116,6 @@ func boolToInt(b bool) int {
 }
 
 func (f *Fuzzer) Generate(n int, someValue float64, startSmb string) []string {
-	//fmt.Println(f.g.Print())
-
 	output := make([]string, 0, n)
 
 	terminals := f.g.ExtractTerminals()
