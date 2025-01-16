@@ -103,21 +103,51 @@ func makeLast(g *grammar.Grammar) map[string]map[string]struct{} {
 	return makeFirst(g.Reverse())
 }
 
+func checkFollow(
+	g *grammar.Grammar,
+	follow map[string]map[string]struct{},
+	first map[string]map[string]struct{},
+) (map[string]map[string]struct{}, bool) {
+	changed := false
+
+	isChanged := func(rightRule grammar.ProductionBody) bool {
+		for terminal := range first[rightRule[1]] {
+			if _, ok := follow[rightRule[0]][terminal]; !ok {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	for _, rightRules := range g.Grammar {
+		for _, rightRule := range rightRules.Rights {
+			if len(rightRule) > 1 {
+				changed = isChanged(rightRule)
+
+				follow[rightRule[0]] = union(
+					follow[rightRule[0]],
+					first[rightRule[1]],
+				)
+			}
+		}
+	}
+
+	return follow, changed
+}
+
 func makeFollow(g *grammar.Grammar, first map[string]map[string]struct{}) map[string]map[string]struct{} {
 	follow := make(map[string]map[string]struct{})
 
-	follow[g.Start] = map[string]struct{}{
-		"$": {},
+	var changed bool
+
+	for {
+		follow, changed = checkFollow(g, follow, first)
+
+		if !changed {
+			return follow
+		}
 	}
-
-	changed := true
-
-	for changed {
-		changed = false
-
-	}
-
-	return follow
 }
 
 func makePrecede(g *grammar.Grammar, last map[string]map[string]struct{}) map[string]map[string]struct{} {
