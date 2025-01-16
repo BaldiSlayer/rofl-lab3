@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	n = 100
+	n = 10
 	// todo rename
 	someValue = 0.1
 
@@ -47,11 +47,13 @@ func inputLines() string {
 func main() {
 	//input := inputLines()
 	input := `
-S -> [order66]ab
-S -> B
-B -> [order66]
-[order66] -> a
-D -> A`
+S -> [SS1]   a S1 [S]
+S1 -> b
+S -> S1 S
+S -> a
+S -> S S S
+[SS1] -> S S1
+[S] -> S`
 
 	fuzz := fuzzer.New(
 		input,

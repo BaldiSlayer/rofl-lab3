@@ -53,6 +53,10 @@ func randomFloat() float64 {
 func randomItem(items []string) string {
 	rand.Seed(time.Now().UnixNano())
 
+	if len(items) == 0 {
+		return ""
+	}
+
 	randomIndex := rand.Intn(len(items))
 
 	return items[randomIndex]
@@ -102,6 +106,15 @@ func (f *Fuzzer) genString(terminals []string, someValue float64, startSmb strin
 	return res
 }
 
+// cringe
+func boolToInt(b bool) int {
+	if b {
+		return 1
+	}
+
+	return 0
+}
+
 func (f *Fuzzer) Generate(n int, someValue float64, startSmb string) []string {
 	//fmt.Println(f.g.Print())
 
@@ -114,7 +127,7 @@ func (f *Fuzzer) Generate(n int, someValue float64, startSmb string) []string {
 
 		output = append(
 			output,
-			fmt.Sprintf("%s %t", gennedStr, f.cyk.Check(gennedStr)),
+			fmt.Sprintf("%s %d", gennedStr, boolToInt(f.cyk.Check(gennedStr))),
 		)
 	}
 

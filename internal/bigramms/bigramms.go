@@ -37,7 +37,7 @@ func makeFirstAndLastRec(
 ) {
 	visited[nt] = struct{}{}
 
-	// todo not cool function name
+	// todo it is not cool function name
 	step := func(targetSet map[string]map[string]struct{}, smb string) {
 		if isNotTerminal(smb) {
 			if _, ok := visited[smb]; !ok {
@@ -59,7 +59,7 @@ func makeFirstAndLastRec(
 		step(first, rightRule[0])
 
 		// update last
-		step(first, rightRule[len(rightRule)-1])
+		step(last, rightRule[len(rightRule)-1])
 	}
 }
 

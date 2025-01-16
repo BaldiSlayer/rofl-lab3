@@ -47,7 +47,7 @@ func (p *Parser) parseCapitals(s string) string {
 	if len(s) > 1 && isNumeric(s[1]) {
 		p.pos++
 
-		return string(s[0]) + string(s[p.pos+1])
+		return string(s[0]) + string(s[1])
 	}
 
 	return string(s[0])
