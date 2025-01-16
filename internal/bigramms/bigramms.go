@@ -2,6 +2,7 @@ package bigramms
 
 import (
 	"fmt"
+
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 )
 

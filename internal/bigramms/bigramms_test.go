@@ -1,9 +1,10 @@
 package bigramms
 
 import (
+	"testing"
+
 	"github.com/BaldiSlayer/rofl-lab3/internal/parser"
 	"github.com/stretchr/testify/require"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 )

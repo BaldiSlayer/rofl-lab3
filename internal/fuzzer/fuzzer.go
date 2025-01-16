@@ -2,11 +2,12 @@ package fuzzer
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
+
 	"github.com/BaldiSlayer/rofl-lab3/internal/bigramms"
 	"github.com/BaldiSlayer/rofl-lab3/internal/cyk"
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
-	"math/rand"
-	"time"
 )
 
 func randomFloat() float64 {
