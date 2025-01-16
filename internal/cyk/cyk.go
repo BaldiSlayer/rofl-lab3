@@ -1,3 +1,4 @@
+// Package cyk provides implementation of Cocke–Younger–Kasami algorithm.
 package cyk
 
 import (
@@ -58,6 +59,9 @@ func calcDP(d map[string][][]bool, rightRules grammar.Rule, i, j int) bool {
 	return false
 }
 
+// Check checks if word can be produced by specified CFG. dp[A][i][j] = true means that we can produce [i;j) substring
+// of w from nonterminal symbol A.
+// Warning: context-free grammar must be in Chomsky Normal Form.
 func (c *CYK) Check(word string) bool {
 	dp := make(map[string][][]bool)
 

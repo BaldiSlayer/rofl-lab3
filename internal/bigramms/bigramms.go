@@ -25,12 +25,10 @@ func union(dest map[string]struct{}, src map[string]struct{}) map[string]struct{
 func difference(setA, setB map[string]struct{}) map[string]struct{} {
 	result := make(map[string]struct{})
 
-	// Добавляем все элементы из setA в результат
 	for key := range setA {
 		result[key] = struct{}{}
 	}
 
-	// Удаляем элементы, присутствующие в setB
 	for key := range setB {
 		delete(result, key)
 	}
