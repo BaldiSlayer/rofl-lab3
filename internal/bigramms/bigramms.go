@@ -2,7 +2,6 @@ package bigramms
 
 import (
 	"fmt"
-
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 )
 
@@ -13,6 +12,10 @@ type Bigramms struct {
 
 func isNotTerminal(symbols string) bool {
 	return !(symbols[0] >= 'a' && symbols[0] <= 'z')
+}
+
+func isTerminal(symbols string) bool {
+	return symbols[0] >= 'a' && symbols[0] <= 'z'
 }
 
 func union(dest map[string]struct{}, src map[string]struct{}) map[string]struct{} {
@@ -27,53 +30,73 @@ func union(dest map[string]struct{}, src map[string]struct{}) map[string]struct{
 	return dest
 }
 
-func makeFirstAndLastRec(
-	g *grammar.Grammar,
-	visited map[string]struct{},
-	nt string,
-	first map[string]map[string]struct{},
-	last map[string]map[string]struct{},
-) {
-	visited[nt] = struct{}{}
+func difference(setA, setB map[string]struct{}) map[string]struct{} {
+	result := make(map[string]struct{})
 
-	// todo it is not cool function name
-	step := func(targetSet map[string]map[string]struct{}, smb string) {
-		if isNotTerminal(smb) {
-			if _, ok := visited[smb]; !ok {
-				makeFirstAndLastRec(g, visited, smb, targetSet, last)
-			}
-
-			targetSet[nt] = union(targetSet[nt], targetSet[smb])
-		} else {
-			if _, ok := targetSet[nt]; !ok {
-				targetSet[nt] = make(map[string]struct{})
-			}
-
-			targetSet[nt][smb] = struct{}{}
-		}
+	// Добавляем все элементы из setA в результат
+	for key := range setA {
+		result[key] = struct{}{}
 	}
 
-	for _, rightRule := range g.Grammar[nt].Rights {
-		// update first
-		step(first, rightRule[0])
-
-		// update last
-		step(last, rightRule[len(rightRule)-1])
+	// Удаляем элементы, присутствующие в setB
+	for key := range setB {
+		delete(result, key)
 	}
+
+	return result
 }
 
-func makeFirstAndLast(g *grammar.Grammar) (map[string]map[string]struct{}, map[string]map[string]struct{}) {
-	visited := make(map[string]struct{})
-	first := make(map[string]map[string]struct{})
-	last := make(map[string]map[string]struct{})
+func constructFirst(g *grammar.Grammar, first map[string]map[string]struct{}) map[string]map[string]struct{} {
+	changed := true
 
-	for nt := range g.Grammar {
-		if _, ok := visited[nt]; !ok {
-			makeFirstAndLastRec(g, visited, nt, first, last)
+	for changed {
+		changed = false
+
+		for nt, rule := range g.Grammar {
+			for _, pb := range rule.Rights {
+				elem := pb[0]
+
+				newElements := difference(first[elem], first[nt])
+
+				if len(newElements) != 0 {
+					first[nt] = union(first[nt], first[elem])
+
+					changed = true
+				}
+			}
 		}
 	}
 
-	return first, last
+	return first
+}
+
+func makeFirst(g *grammar.Grammar) map[string]map[string]struct{} {
+	first := make(map[string]map[string]struct{})
+
+	// first(terminal) = terminal
+	for _, rule := range g.Grammar {
+		first[rule.NonTerminal] = make(map[string]struct{})
+
+		for _, pb := range rule.Rights {
+			for _, elem := range pb {
+				if isTerminal(elem) {
+					first[elem] = make(map[string]struct{})
+					first[elem][elem] = struct{}{}
+				}
+			}
+		}
+	}
+
+	first = constructFirst(g, first)
+
+	// remove terminals from first
+	for e := range first {
+		if isTerminal(e) {
+			delete(first, e)
+		}
+	}
+
+	return first
 }
 
 func checkFollow(
@@ -250,14 +273,14 @@ func makeBigramMatrix(
 }
 
 func (b *Bigramms) Build(g *grammar.Grammar) *Bigramms {
-	first, last := makeFirstAndLast(g)
-	follow := makeFollow(g, first)
-	precede := makePrecede(g, last)
+	first := makeFirst(g)
+	//follow := makeFollow(g, first)
+	//precede := makePrecede(g, last)
 
-	matrix := makeBigramMatrix(g, first, last, follow, precede)
+	//matrix := makeBigramMatrix(g, first, last, follow, precede)
 
 	return &Bigramms{
-		Matrix: matrix,
-		First:  first,
+		//Matrix: matrix,
+		First: first,
 	}
 }

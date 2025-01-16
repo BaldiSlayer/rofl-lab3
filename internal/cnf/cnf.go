@@ -216,7 +216,7 @@ func deleteRulesWithNT(g *grammar.Grammar, nt string) *grammar.Grammar {
 }
 
 func determineGenerativeness(g *grammar.Grammar) map[string]bool {
-	rules := g.GetProductionsSlice()
+	rules := g.GetRulesSlice()
 
 	isGenerating := make(map[string]bool, len(g.Grammar))
 	counter := make([]int, len(rules))

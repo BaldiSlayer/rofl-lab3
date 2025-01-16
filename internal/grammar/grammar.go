@@ -58,8 +58,8 @@ func (g *Grammar) ExtractTerminals() []string {
 	return uniqify(terminals)
 }
 
-// GetProductionsSlice creates a slide with rules. Necessary for a constant order
-func (g *Grammar) GetProductionsSlice() []Rule {
+// GetRulesSlice creates a slide with rules. Necessary for a constant order
+func (g *Grammar) GetRulesSlice() []Rule {
 	rules := make([]Rule, 0, len(g.Grammar))
 
 	for _, pbs := range g.Grammar {

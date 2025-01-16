@@ -19,3 +19,6 @@ go build ./cmd/main.go
 ### Использованные материалы
 
 [Приведение к НФХ](https://neerc.ifmo.ru/wiki/index.php?title=Нормальная_форма_Хомского)
+
+https://neerc.ifmo.ru/wiki/index.php?title=Построение_FIRST_и_FOLLOW
+

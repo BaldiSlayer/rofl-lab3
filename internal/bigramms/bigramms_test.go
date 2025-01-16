@@ -1,9 +1,9 @@
 package bigramms
 
 import (
+	"github.com/BaldiSlayer/rofl-lab3/internal/parser"
+	"github.com/stretchr/testify/require"
 	"testing"
-
-	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -60,34 +60,68 @@ func TestUnionWithIdenticalMaps(t *testing.T) {
 	assert.Equal(t, expected, result)
 }
 
-func TestBigramms_Build(t *testing.T) {
-	g := grammar.Grammar{
-		Start: "S",
-		Grammar: map[string]grammar.Rule{
-			"S": {
-				NonTerminal: "S",
-				Rights: []grammar.ProductionBody{
-					{
-						"A",
-						"A",
-					},
+func Test_makeFirst(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  map[string]map[string]struct{}
+	}{
+		{
+			name:  "1",
+			input: "S -> AB\nA -> a\nB -> b",
+			want: map[string]map[string]struct{}{
+				"A": {
+					"a": {},
+				},
+				"B": {
+					"b": {},
+				},
+				"S": {
+					"a": {},
 				},
 			},
-			"A": {
-				NonTerminal: "A",
-				Rights: []grammar.ProductionBody{
-					{
-						"a",
-					},
+		},
+		{
+			name:  "2",
+			input: "S -> a | b\nA -> a\nB -> b",
+			want: map[string]map[string]struct{}{
+				"S": {
+					"a": {},
+					"b": {},
+				},
+				"A": {
+					"a": {},
+				},
+				"B": {
+					"b": {},
+				},
+			},
+		},
+		{
+			name:  "3",
+			input: "S -> B | A\nA -> a\nB -> b",
+			want: map[string]map[string]struct{}{
+				"S": {
+					"a": {},
+					"b": {},
+				},
+				"A": {
+					"a": {},
+				},
+				"B": {
+					"b": {},
 				},
 			},
 		},
 	}
 
-	b := &Bigramms{}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			input := parser.New().Parse(tt.input, "S")
 
-	b.Build(&g)
+			result := makeFirst(input)
 
-	u := 0
-	_ = u
+			require.Equal(t, tt.want, result)
+		})
+	}
 }

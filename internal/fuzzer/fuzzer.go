@@ -30,16 +30,13 @@ type Fuzzer struct {
 }
 
 func New(s string, p Parser, cnf CNFer, b *bigramms.Bigramms, startSymbol string) *Fuzzer {
-	gram := p.Parse(s, startSymbol)
+	g := p.Parse(s, startSymbol)
 
-	gCNF := cnf.ToCNF(gram)
-
-	bm := b.Build(gCNF)
-	c := cyk.New(gCNF)
+	gCNF := cnf.ToCNF(g)
 
 	return &Fuzzer{
-		bigramm: bm,
-		cyk:     c,
+		bigramm: b.Build(gCNF),
+		cyk:     cyk.New(gCNF),
 		g:       gCNF,
 	}
 }
@@ -53,16 +50,16 @@ func randomFloat() float64 {
 func randomItem(items []string) string {
 	rand.Seed(time.Now().UnixNano())
 
-	if len(items) == 0 {
-		return ""
-	}
-
 	randomIndex := rand.Intn(len(items))
 
 	return items[randomIndex]
 }
 
 func randomKeyFromMap(m map[string]struct{}) string {
+	if len(m) == 0 {
+		return ""
+	}
+
 	a := make([]string, 0, len(m))
 
 	for item := range m {
