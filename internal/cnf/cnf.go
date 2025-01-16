@@ -135,7 +135,7 @@ func deleteChainRulesIteratively(nt string, g *grammar.Grammar, visited map[stri
 		// если тело продукции - цепное правило, то все его правила
 		// прикрепляем к нетерминалу nt
 		if len(pBody) == 1 && isNotTerminal(pBody[0]) {
-			ntPBs := g.Grammar[pBody[0]].Rights
+			ntPBs := newGrammar.Grammar[pBody[0]].Rights
 			newRule.Rights = append(newRule.Rights, ntPBs...)
 
 			continue

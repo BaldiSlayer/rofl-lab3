@@ -161,6 +161,16 @@ func Test_deleteChainRules(t *testing.T) {
 			input: "S -> B | E | D\nB -> cc\nE -> e\nD -> ddd",
 			want:  "S -> cc | e | ddd\nB -> cc\nE -> e\nD -> ddd",
 		},
+		{
+			name:  "itmo 2",
+			input: "S -> B | a\nB -> C | b\nC -> dd | c",
+			want:  "S -> dd | c | b | a\nB -> dd | c | b\nC -> dd | c",
+		},
+		{
+			name:  "my 2",
+			input: "S -> B\nB -> D\nD -> ddd",
+			want:  "S -> ddd\nB -> ddd\nD -> ddd",
+		},
 	}
 
 	for _, tt := range tests {
