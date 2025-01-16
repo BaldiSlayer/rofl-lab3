@@ -138,3 +138,51 @@ func TestCYK_Check_PSP(t *testing.T) {
 		})
 	}
 }
+
+func TestCYK_Check_3(t *testing.T) {
+	input := parser.New().Parse(
+		"[new_NT_0] -> [NT_PT_0][NT_PT_1]\n[order66] -> a\n[NT_PT_0] -> a\n"+
+			"S -> [order66][new_NT_0] | a\n[NT_PT_1] -> b",
+		"S",
+	)
+
+	tests := []struct {
+		name string
+		args string
+		want bool
+	}{
+		{
+			name: "1",
+			args: "a",
+			want: true,
+		},
+		{
+			name: "1",
+			args: "b",
+			want: false,
+		},
+		{
+			name: "1",
+			args: "d",
+			want: false,
+		},
+		{
+			name: "3",
+			args: "aab",
+			want: true,
+		},
+		{
+			name: "4",
+			args: "abababababbabbababbabbabbabbbabbabbabab",
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			res := New(input).Check(tt.args)
+
+			require.Equal(t, tt.want, res)
+		})
+	}
+}

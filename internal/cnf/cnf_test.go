@@ -1,7 +1,6 @@
 package cnf
 
 import (
-	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 	"github.com/BaldiSlayer/rofl-lab3/internal/parser"
 	"testing"
 
@@ -249,236 +248,43 @@ func Test_deletePairedTerminals(t *testing.T) {
 	tests := []struct {
 		name  string
 		input string
-		want  *grammar.Grammar
+		want  string
 	}{
 		{
 			name:  "my",
 			input: "S -> aa",
-			want: &grammar.Grammar{
-				Start: "S",
-				Grammar: map[string]models.Rule{
-					"S": {
-						NonTerminal: "S",
-						Rights: []models.ProductionBody{
-							{
-								"[NT_PT_0]",
-								"[NT_PT_0]",
-							},
-						},
-					},
-					"[NT_PT_0]": {
-						NonTerminal: "[NT_PT_0]",
-						Rights: []models.ProductionBody{
-							{
-								"a",
-							},
-						},
-					},
-				},
-			},
+			want:  "S -> [NT_PT_a][NT_PT_a]\n[NT_PT_a] -> a",
 		},
 		{
 			name:  "my",
 			input: "S -> aa | bb | dC\nC -> cc",
-			want: &grammar.Grammar{
-				Start: "S",
-				Grammar: map[string]models.Rule{
-					"S": {
-						NonTerminal: "S",
-						Rights: []models.ProductionBody{
-							{
-								"[NT_PT_0]",
-								"[NT_PT_0]",
-							},
-							{
-								"[NT_PT_1]",
-								"[NT_PT_1]",
-							},
-							{
-								"[NT_PT_2]",
-								"C",
-							},
-						},
-					},
-					"[NT_PT_0]": {
-						NonTerminal: "[NT_PT_0]",
-						Rights: []models.ProductionBody{
-							{
-								"a",
-							},
-						},
-					},
-					"[NT_PT_1]": {
-						NonTerminal: "[NT_PT_1]",
-						Rights: []models.ProductionBody{
-							{
-								"b",
-							},
-						},
-					},
-					"[NT_PT_2]": {
-						NonTerminal: "[NT_PT_2]",
-						Rights: []models.ProductionBody{
-							{
-								"d",
-							},
-						},
-					},
-					"C": {
-						NonTerminal: "C",
-						Rights: []models.ProductionBody{
-							{
-								"[NT_PT_3]",
-								"[NT_PT_3]",
-							},
-						},
-					},
-					"[NT_PT_3]": {
-						NonTerminal: "[NT_PT_3]",
-						Rights: []models.ProductionBody{
-							{
-								"c",
-							},
-						},
-					},
-				},
-			},
+			want:  "S -> [NT_PT_a][NT_PT_a] | [NT_PT_b][NT_PT_b] | [NT_PT_d]C\nC -> [NT_PT_c][NT_PT_c]\n[NT_PT_a] -> a\n[NT_PT_b] -> b\n[NT_PT_c] -> c\n[NT_PT_d] -> d",
 		},
 		{
 			name:  "my",
 			input: "S -> a",
-			want: &grammar.Grammar{
-				Start: "S",
-				Grammar: map[string]models.Rule{
-					"S": {
-						NonTerminal: "S",
-						Rights: []models.ProductionBody{
-							{
-								"a",
-							},
-						},
-					},
-				},
-			},
+			want:  "S -> a",
 		},
 		{
 			name:  "my",
 			input: "S -> ab",
-			want: &grammar.Grammar{
-				Start: "S",
-				Grammar: map[string]models.Rule{
-					"S": {
-						NonTerminal: "S",
-						Rights: []models.ProductionBody{
-							{
-								"[NT_PT_0]",
-								"[NT_PT_1]",
-							},
-						},
-					},
-					"[NT_PT_0]": {
-						NonTerminal: "[NT_PT_0]",
-						Rights: []models.ProductionBody{
-							{
-								"a",
-							},
-						},
-					},
-					"[NT_PT_1]": {
-						NonTerminal: "[NT_PT_1]",
-						Rights: []models.ProductionBody{
-							{
-								"b",
-							},
-						},
-					},
-				},
-			},
+			want:  "S -> [NT_PT_a][NT_PT_b]\n[NT_PT_a] -> a\n[NT_PT_b] -> b",
 		},
 		{
 			name:  "my",
 			input: "S -> ab | cc | cD\nD -> aa",
-			want: &grammar.Grammar{
-				Start: "S",
-				Grammar: map[string]models.Rule{
-					"S": {
-						NonTerminal: "S",
-						Rights: []models.ProductionBody{
-							{
-								"[NT_PT_0]",
-								"[NT_PT_1]",
-							},
-							{
-								"[NT_PT_2]",
-								"[NT_PT_2]",
-							},
-							{
-								"[NT_PT_3]",
-								"D",
-							},
-						},
-					},
-					"[NT_PT_0]": {
-						NonTerminal: "[NT_PT_0]",
-						Rights: []models.ProductionBody{
-							{
-								"a",
-							},
-						},
-					},
-					"[NT_PT_1]": {
-						NonTerminal: "[NT_PT_1]",
-						Rights: []models.ProductionBody{
-							{
-								"b",
-							},
-						},
-					},
-					"[NT_PT_2]": {
-						NonTerminal: "[NT_PT_2]",
-						Rights: []models.ProductionBody{
-							{
-								"c",
-							},
-						},
-					},
-					"[NT_PT_3]": {
-						NonTerminal: "[NT_PT_3]",
-						Rights: []models.ProductionBody{
-							{
-								"c",
-							},
-						},
-					},
-					"D": {
-						NonTerminal: "D",
-						Rights: []models.ProductionBody{
-							{
-								"[NT_PT_4]",
-								"[NT_PT_4]",
-							},
-						},
-					},
-					"[NT_PT_4]": {
-						NonTerminal: "[NT_PT_4]",
-						Rights: []models.ProductionBody{
-							{
-								"a",
-							},
-						},
-					},
-				},
-			},
+			want:  "S -> [NT_PT_a][NT_PT_b] | [NT_PT_c][NT_PT_c] | [NT_PT_c]D\nD -> [NT_PT_a][NT_PT_a]\n[NT_PT_a] -> a\n[NT_PT_b] -> b\n[NT_PT_c] -> c",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			input := parser.New().Parse(tt.input, "S")
+			expected := parser.New().Parse(tt.want, "S")
 
 			result := deletePairedTerminals(input)
 
-			require.Equal(t, tt.want, result)
+			require.Equal(t, expected, result)
 		})
 	}
 }
@@ -487,85 +293,12 @@ func TestCNF_ToCNF(t *testing.T) {
 	tests := []struct {
 		name  string
 		input string
-		want  *grammar.Grammar
+		want  string
 	}{
 		{
 			name:  "1",
 			input: "S -> cA | dA | cB | eB\nA -> a\nB -> b",
-			want: &grammar.Grammar{
-				Start: "S",
-				Grammar: map[string]models.Rule{
-					"S": {
-						NonTerminal: "S",
-						Rights: []models.ProductionBody{
-							{
-								"[NT_PT_0]",
-								"A",
-							},
-							{
-								"[NT_PT_1]",
-								"A",
-							},
-							{
-								"[NT_PT_2]",
-								"B",
-							},
-							{
-								"[NT_PT_3]",
-								"B",
-							},
-						},
-					},
-					"A": {
-						NonTerminal: "A",
-						Rights: []models.ProductionBody{
-							{
-								"a",
-							},
-						},
-					},
-					"B": {
-						NonTerminal: "B",
-						Rights: []models.ProductionBody{
-							{
-								"b",
-							},
-						},
-					},
-					"[NT_PT_0]": {
-						NonTerminal: "[NT_PT_0]",
-						Rights: []models.ProductionBody{
-							{
-								"c",
-							},
-						},
-					},
-					"[NT_PT_1]": {
-						NonTerminal: "[NT_PT_1]",
-						Rights: []models.ProductionBody{
-							{
-								"d",
-							},
-						},
-					},
-					"[NT_PT_2]": {
-						NonTerminal: "[NT_PT_2]",
-						Rights: []models.ProductionBody{
-							{
-								"c",
-							},
-						},
-					},
-					"[NT_PT_3]": {
-						NonTerminal: "[NT_PT_3]",
-						Rights: []models.ProductionBody{
-							{
-								"e",
-							},
-						},
-					},
-				},
-			},
+			want:  "A -> a\nB -> b\nS -> [NT_PT_c]A | [NT_PT_d]A | [NT_PT_c]B | [NT_PT_e]B\n[NT_PT_c] -> c\n[NT_PT_d] -> d\n[NT_PT_e] -> e",
 		},
 	}
 
@@ -574,10 +307,11 @@ func TestCNF_ToCNF(t *testing.T) {
 			cnf := &CNF{}
 
 			input := parser.New().Parse(tt.input, "S")
+			expected := parser.New().Parse(tt.want, "S")
 
 			result := cnf.ToCNF(input)
 
-			require.Equal(t, tt.want, result)
+			require.Equal(t, expected, result)
 		})
 	}
 }

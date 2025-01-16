@@ -1,6 +1,9 @@
 package grammar
 
-import "github.com/BaldiSlayer/rofl-lab3/internal/models"
+import (
+	"github.com/BaldiSlayer/rofl-lab3/internal/models"
+	"strings"
+)
 
 type Grammar struct {
 	Start   string
@@ -23,6 +26,20 @@ func extractTerminalsFromRule(rule models.ProductionBody) []string {
 	return terminals
 }
 
+func uniqify(input []string) []string {
+	uniqueMap := make(map[string]struct{}, len(input))
+	uniqueSlice := make([]string, 0, len(input))
+
+	for _, item := range input {
+		if _, exists := uniqueMap[item]; !exists {
+			uniqueMap[item] = struct{}{}
+			uniqueSlice = append(uniqueSlice, item)
+		}
+	}
+
+	return uniqueSlice
+}
+
 func (g *Grammar) ExtractTerminals() []string {
 	terminals := make([]string, 0, len(g.Grammar))
 
@@ -32,7 +49,7 @@ func (g *Grammar) ExtractTerminals() []string {
 		}
 	}
 
-	return terminals
+	return uniqify(terminals)
 }
 
 // GetProductionsSlice creates a slide with rules. Necessary for a constant order
@@ -51,6 +68,33 @@ func (g *Grammar) GetProductionsSlice() []models.Rule {
 	}
 
 	return rules
+}
+
+func (g *Grammar) Print() string {
+	var sb strings.Builder
+
+	for _, rule := range g.Grammar {
+		sb.WriteString(rule.NonTerminal)
+		sb.WriteString(" -> ")
+
+		for i, pb := range rule.Rights {
+			smth := ""
+
+			for _, smb := range pb {
+				smth += smb
+			}
+
+			sb.WriteString(smth)
+
+			if i < len(rule.Rights)-1 {
+				sb.WriteString(" | ")
+			}
+		}
+
+		sb.WriteString("\n")
+	}
+
+	return sb.String()
 }
 
 func New(rules []models.Rule, startSymbol string) *Grammar {

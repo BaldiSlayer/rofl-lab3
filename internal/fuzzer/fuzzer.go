@@ -54,7 +54,7 @@ func randomItem(items []string) string {
 }
 
 func randomKeyFromMap(m map[string]struct{}) string {
-	a := make([]string, len(m))
+	a := make([]string, 0, len(m))
 
 	for item := range m {
 		a = append(a, item)
@@ -98,6 +98,8 @@ func (f *Fuzzer) genString(terminals []string, someValue float64, startSmb strin
 }
 
 func (f *Fuzzer) Generate(n int, someValue float64, startSmb string) []string {
+	fmt.Println(f.g.Print())
+
 	output := make([]string, 0, n)
 
 	terminals := f.g.ExtractTerminals()

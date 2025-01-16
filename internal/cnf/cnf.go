@@ -135,7 +135,14 @@ func deleteChainRulesIteratively(nt string, g *grammar.Grammar, visited map[stri
 		// если тело продукции - цепное правило, то все его правила
 		// прикрепляем к нетерминалу nt
 		if len(pBody) == 1 && isNotTerminal(pBody[0]) {
-			ntPBs := newGrammar.Grammar[pBody[0]].Rights
+			ntPBs := make([]models.ProductionBody, 0)
+
+			if _, ok := newGrammar.Grammar[pBody[0]]; ok {
+				ntPBs = newGrammar.Grammar[pBody[0]].Rights
+			} else {
+				ntPBs = g.Grammar[pBody[0]].Rights
+			}
+
 			newRule.Rights = append(newRule.Rights, ntPBs...)
 
 			continue
@@ -304,7 +311,7 @@ func deleteNonReachable(g *grammar.Grammar) *grammar.Grammar {
 
 func replacePairedTerminals(
 	pb models.ProductionBody,
-	genNT func() string,
+	genNT func(terminal string) string,
 ) (models.ProductionBody, []models.Rule) {
 	rules := make([]models.Rule, 0)
 	pBody := make(models.ProductionBody, 0)
@@ -319,7 +326,7 @@ func replacePairedTerminals(
 				return
 			}
 
-			name = genNT()
+			name = genNT(smb)
 
 			rules = append(rules, models.Rule{
 				NonTerminal: name,
@@ -345,11 +352,8 @@ func replacePairedTerminals(
 }
 
 func deletePairedTerminals(g *grammar.Grammar) *grammar.Grammar {
-	i := -1
-
-	genNTName := func() string {
-		i++
-		return fmt.Sprintf("[NT_PT_%d]", i)
+	genNTName := func(terminal string) string {
+		return fmt.Sprintf("[NT_PT_%s]", terminal)
 	}
 
 	replacements := make([]models.Rule, 0)
