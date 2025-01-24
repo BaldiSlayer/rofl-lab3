@@ -138,7 +138,7 @@ func (f *Fuzzer) Generate(n, minAcceptedCount int, breakProb, terminalAddingProb
 
 		inCFG := f.cyk.Check(gennedStr)
 
-		if inCFG != mustBeIn {
+		if mustBeIn && !inCFG {
 			return
 		}
 
