@@ -15,6 +15,7 @@ import (
 
 var (
 	testsCount         = flag.Int("tests_count", 10, "Number of tests")
+	minAcceptedCount   = flag.Int("minimal_accepted_count", 0, "Minimal number of accepted tests")
 	startSymbol        = flag.String("start_symbol", "S", "Starting symbol")
 	breakProb          = flag.Float64("break_prob", 0.1, "Probability of break (0.0 - 1.0)")
 	terminalAddingProb = flag.Float64("terminal_adding_prob", 0.1, "Probability of terminal addition (0.0 - 1.0)")
@@ -25,8 +26,9 @@ func printHelp() {
 	fmt.Println("Usage: go run main.go [OPTIONS]")
 	fmt.Println("Options:")
 	fmt.Println("  -tests_count int        Number of tests")
+	fmt.Println("  -minimal_accepted_count int     Number of accepted tests")
 	fmt.Println("  -start_symbol string    Starting symbol")
-	fmt.Println("  -break_prob float        Probability of break (0.0 - 1.0)")
+	fmt.Println("  -break_prob float       Probability of break (0.0 - 1.0)")
 	fmt.Println("  -terminal_adding_prob float Probability of terminal addition (0.0 - 1.0)")
 }
 
@@ -39,7 +41,7 @@ func inputLines() string {
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "ошибка ввода:", err)
+		fmt.Fprintln(os.Stderr, "input error:", err)
 
 		return ""
 	}
@@ -63,7 +65,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	if *testsCount <= 0 || *startSymbol == "" || *breakProb < 0.0 ||
+	if *testsCount <= 0 || *minAcceptedCount < 0 || *minAcceptedCount > *testsCount || *startSymbol == "" || *breakProb < 0.0 ||
 		*breakProb > 1.0 || *terminalAddingProb < 0.0 || *terminalAddingProb > 1.0 {
 		fmt.Println("Invalid arguments.")
 		printHelp()
@@ -81,7 +83,7 @@ func main() {
 		*startSymbol,
 	)
 
-	results := fuzz.Generate(*testsCount, *breakProb, *terminalAddingProb)
+	results := fuzz.Generate(*testsCount, *minAcceptedCount, *breakProb, *terminalAddingProb)
 	for _, line := range results {
 		fmt.Println(line)
 	}

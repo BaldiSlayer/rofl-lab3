@@ -2,6 +2,7 @@ package fuzzer
 
 import (
 	"fmt"
+	"github.com/BaldiSlayer/rofl-lab3/pkg/saturator"
 	"math/rand"
 	"time"
 
@@ -76,11 +77,13 @@ func (f *Fuzzer) genString(terminals []string, breakProb float64, terminalAdding
 	res := randomKeyFromMap(f.bigramm.First[f.g.Start])
 	lastSmb := res
 
-	for true {
+	saturator.WithBreak(func(stop func()) {
 		randVal := randomFloat()
 
 		if randomFloat() < breakProb {
-			break
+			stop()
+
+			return
 		}
 
 		// add terminal
@@ -88,26 +91,30 @@ func (f *Fuzzer) genString(terminals []string, breakProb float64, terminalAdding
 			lastSmb = randomItem(terminals)
 			res += lastSmb
 
-			continue
+			return
 		}
 
 		_, ok := f.bigramm.Matrix[lastSmb]
 		cond := ok && len(f.bigramm.Matrix[lastSmb]) != 0
 
 		if !cond {
-			break
+			stop()
+
+			return
 		}
 
 		// add from bigrams
 		lastSmb = randomKeyFromMap(f.bigramm.Matrix[string(res[len(res)-1])])
 		res += lastSmb
-	}
+	})
 
 	return res
 }
 
-func (f *Fuzzer) Generate(n int, breakProb, terminalAddingProb float64) []string {
-	output := make([]string, n)
+func (f *Fuzzer) Generate(n, minAcceptedCount int, breakProb, terminalAddingProb float64) []string {
+	output := make([]string, 0, n)
+
+	accepted := 0
 
 	// cringe
 	boolToInt := func(b bool) int {
@@ -126,10 +133,27 @@ func (f *Fuzzer) Generate(n int, breakProb, terminalAddingProb float64) []string
 		return []string{}
 	}
 
-	for i := 0; i < n; i++ {
+	processGennedString := func(mustBeIn bool) {
 		gennedStr := f.genString(terminals, breakProb, terminalAddingProb)
 
-		output[i] = fmt.Sprintf("%s %d", gennedStr, boolToInt(f.cyk.Check(gennedStr)))
+		inCFG := f.cyk.Check(gennedStr)
+
+		if inCFG != mustBeIn {
+			return
+		}
+
+		inCFGInt := boolToInt(inCFG)
+		accepted += inCFGInt
+
+		output = append(output, fmt.Sprintf("%s %d", gennedStr, inCFGInt))
+	}
+
+	for accepted < minAcceptedCount {
+		processGennedString(true)
+	}
+
+	for len(output) < n {
+		processGennedString(false)
 	}
 
 	return output

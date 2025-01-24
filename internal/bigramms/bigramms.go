@@ -2,6 +2,7 @@ package bigramms
 
 import (
 	"fmt"
+	"github.com/BaldiSlayer/rofl-lab3/pkg/saturator"
 
 	"github.com/BaldiSlayer/rofl-lab3/internal/grammar"
 )
@@ -37,22 +38,8 @@ func difference(setA, setB map[string]struct{}) map[string]struct{} {
 	return result
 }
 
-func saturationUntilNoChanges(f func(changed func())) {
-	c := true
-
-	changed := func() {
-		c = true
-	}
-
-	for c {
-		c = false
-
-		f(changed)
-	}
-}
-
 func constructFirst(g *grammar.Grammar, first map[string]map[string]struct{}) map[string]map[string]struct{} {
-	saturationUntilNoChanges(func(changed func()) {
+	saturator.WithContinue(func(goOn func()) {
 		for nt, rule := range g.Grammar {
 			for _, pb := range rule.Rights {
 				elem := pb[0]
@@ -63,7 +50,7 @@ func constructFirst(g *grammar.Grammar, first map[string]map[string]struct{}) ma
 					first[nt] = union(first[nt], first[elem])
 
 					// have to make next loop
-					changed()
+					goOn()
 				}
 			}
 		}
