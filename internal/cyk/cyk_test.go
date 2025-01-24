@@ -187,3 +187,85 @@ func TestCYK_Check_3(t *testing.T) {
 		})
 	}
 }
+
+func TestCYK_Check_4(t *testing.T) {
+	input := parser.New().Parse(
+		"S -> [NT_PT_a][new_NT_0] | [NT_ALONE_c] | [NT_PT_a][new_NT_1] | [NT_ALONE_d]\n"+
+			"[new_NT_0] -> C[NT_PT_b]\n"+
+			"C -> [NT_PT_a][new_NT_0] | [NT_ALONE_c]\n"+
+			"D -> [NT_PT_a][new_NT_1] | [NT_ALONE_d]\n"+
+			"[NT_PT_a] -> [NT_ALONE_a]\n"+
+			"[NT_ALONE_a] -> a\n"+
+			"[NT_ALONE_d] -> d\n"+
+			"[NT_ALONE_b] -> b\n"+
+			"[new_NT_2] -> [NT_PT_b][NT_PT_b]\n"+
+			"[new_NT_1] -> D[new_NT_2]\n"+
+			"[NT_PT_b] -> [NT_ALONE_b]\n[NT_ALONE_c] -> c\n",
+		"S",
+	)
+
+	tests := []struct {
+		name string
+		args string
+		want bool
+	}{
+		{
+			name: "1",
+			args: "c",
+			want: true,
+		},
+		{
+			name: "2",
+			args: "d",
+			want: true,
+		},
+		{
+			name: "3",
+			args: "ddd",
+			want: false,
+		},
+		{
+			name: "4",
+			args: "a",
+			want: false,
+		},
+		{
+			name: "4",
+			args: "adbb",
+			want: true,
+		},
+		{
+			name: "5",
+			args: "aaaaacbbbbb",
+			want: true,
+		},
+		{
+			name: "5",
+			args: "aaaaadbbbbbbbbbb",
+			want: true,
+		},
+		{
+			name: "5",
+			args: "e",
+			want: false,
+		},
+		{
+			name: "9",
+			args: "aaaadbbbbbbbb",
+			want: true,
+		},
+		{
+			name: "9",
+			args: "aaaadbbbbbbbcb",
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			res := New(input).Check(tt.args)
+
+			require.Equal(t, tt.want, res)
+		})
+	}
+}

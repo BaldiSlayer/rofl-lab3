@@ -372,6 +372,65 @@ func deletePairedTerminals(g *grammar.Grammar) *grammar.Grammar {
 	return g
 }
 
+func replaceAloneTerminals(
+	pb grammar.ProductionBody,
+	genNT func(terminal string) string,
+) (grammar.ProductionBody, []grammar.Rule) {
+	rules := make([]grammar.Rule, 0)
+	pBody := make(grammar.ProductionBody, 0)
+
+	if len(pb) == 1 && grammar.IsTerminal(pb[0]) {
+		name := genNT(pb[0])
+
+		pBody = append(pBody, name)
+
+		rules = append(rules, grammar.Rule{
+			NonTerminal: name,
+			Rights: []grammar.ProductionBody{
+				{
+					pb[0],
+				},
+			},
+		})
+
+		return pBody, rules
+	}
+
+	return pb, rules
+}
+
+func deleteAloneTerminals(g *grammar.Grammar) *grammar.Grammar {
+	genNTName := func(terminal string) string {
+		return fmt.Sprintf("[NT_ALONE_%s]", terminal)
+	}
+
+	replacements := make([]grammar.Rule, 0)
+
+	for nt, rules := range g.Grammar {
+		if len(rules.Rights) > 1 {
+			newRights := make([]grammar.ProductionBody, 0, len(rules.Rights))
+
+			for _, pb := range rules.Rights {
+				newPB, r := replaceAloneTerminals(pb, genNTName)
+
+				newRights = append(newRights, newPB)
+				replacements = append(replacements, r...)
+			}
+
+			g.Grammar[nt] = grammar.Rule{
+				NonTerminal: nt,
+				Rights:      newRights,
+			}
+		}
+	}
+
+	for _, r := range replacements {
+		g.Grammar[r.NonTerminal] = r
+	}
+
+	return g
+}
+
 func (cnf *CNF) ToCNF(g *grammar.Grammar) *grammar.Grammar {
 	transformations := [...]func(*grammar.Grammar) *grammar.Grammar{
 		deleteLongRules,
@@ -379,6 +438,7 @@ func (cnf *CNF) ToCNF(g *grammar.Grammar) *grammar.Grammar {
 		deleteNonGenerative,
 		deleteNonReachable,
 		deletePairedTerminals,
+		deleteAloneTerminals,
 	}
 
 	// TODO it looks bad, I don't like it, but writing 5 function calls and declaring

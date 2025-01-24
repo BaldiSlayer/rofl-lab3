@@ -120,6 +120,12 @@ func (f *Fuzzer) Generate(n int, breakProb, terminalAddingProb float64) []string
 
 	terminals := f.g.ExtractTerminals()
 
+	if len(terminals) == 0 {
+		fmt.Println("there are no terminals. exiting")
+
+		return []string{}
+	}
+
 	for i := 0; i < n; i++ {
 		gennedStr := f.genString(terminals, breakProb, terminalAddingProb)
 

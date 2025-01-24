@@ -299,12 +299,20 @@ func TestCNF_ToCNF(t *testing.T) {
 		{
 			name:  "1",
 			input: "S -> cA | dA | cB | eB\nA -> a\nB -> b",
-			want:  "A -> a\nB -> b\nS -> [NT_PT_c]A | [NT_PT_d]A | [NT_PT_c]B | [NT_PT_e]B\n[NT_PT_c] -> c\n[NT_PT_d] -> d\n[NT_PT_e] -> e",
+			want: "A -> a\n" +
+				"B -> b\n" +
+				"S -> [NT_PT_c]A | [NT_PT_d]A | [NT_PT_c]B | [NT_PT_e]B\n" +
+				"[NT_PT_c] -> c\n" +
+				"[NT_PT_d] -> d\n" +
+				"[NT_PT_e] -> e",
 		},
 		{
 			name:  "2",
 			input: "S -> A | d | E\nA -> B\nB -> C\nC -> c\nE -> e",
-			want:  "S -> c | d | e",
+			want: "S -> [NT_ALONE_c] | [NT_ALONE_d] | [NT_ALONE_e]\n" +
+				"[NT_ALONE_e] -> e\n" +
+				"[NT_ALONE_c] -> c\n" +
+				"[NT_ALONE_d] -> d",
 		},
 	}
 

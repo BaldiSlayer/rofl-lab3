@@ -37,12 +37,22 @@ func difference(setA, setB map[string]struct{}) map[string]struct{} {
 	return result
 }
 
+func saturationUntilNoChanges(f func(changed func())) {
+	c := true
+
+	changed := func() {
+		c = true
+	}
+
+	for c {
+		c = false
+
+		f(changed)
+	}
+}
+
 func constructFirst(g *grammar.Grammar, first map[string]map[string]struct{}) map[string]map[string]struct{} {
-	changed := true
-
-	for changed {
-		changed = false
-
+	saturationUntilNoChanges(func(changed func()) {
 		for nt, rule := range g.Grammar {
 			for _, pb := range rule.Rights {
 				elem := pb[0]
@@ -52,11 +62,12 @@ func constructFirst(g *grammar.Grammar, first map[string]map[string]struct{}) ma
 				if len(newElements) != 0 {
 					first[nt] = union(first[nt], first[elem])
 
-					changed = true
+					// have to make next loop
+					changed()
 				}
 			}
 		}
-	}
+	})
 
 	return first
 }

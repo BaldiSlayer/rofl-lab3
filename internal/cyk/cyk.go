@@ -25,7 +25,7 @@ func New(g *grammar.Grammar) *CYK {
 				},
 			}
 
-			if len(rightRule) == 1 {
+			if len(rightRule) == 1 && grammar.IsTerminal(rightRule[0]) {
 				terminalRules = append(terminalRules, rule)
 
 				continue
@@ -48,9 +48,21 @@ func isOneTermRule(rule grammar.ProductionBody, c uint8) bool {
 }
 
 func calcDP(d map[string][][]bool, rightRules grammar.Rule, i, j int) bool {
+	ok := func(rightRule grammar.ProductionBody, k int, fullFirst bool) bool {
+		if len(rightRule) == 1 {
+			return fullFirst && d[rightRule[0]][i][k]
+		}
+
+		if d[rightRule[0]][i][k] && d[rightRule[1]][k][j] {
+			return true
+		}
+
+		return false
+	}
+
 	for _, rightRule := range rightRules.Rights {
-		for k := i + 1; k < j; k++ {
-			if d[rightRule[0]][i][k] && d[rightRule[1]][k][j] {
+		for k := i + 1; k < j+1; k++ {
+			if ok(rightRule, k, k == j) {
 				return true
 			}
 		}
@@ -81,7 +93,7 @@ func (c *CYK) Check(word string) bool {
 		}
 	}
 
-	for m := 2; m < len(word)+1; m++ {
+	for m := 1; m < len(word)+1; m++ {
 		for i := 0; i < len(word)-m+1; i++ {
 			j := i + m
 
